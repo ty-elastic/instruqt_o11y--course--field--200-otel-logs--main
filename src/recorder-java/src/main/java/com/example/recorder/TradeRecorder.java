@@ -36,8 +36,7 @@ public class TradeRecorder {
 
         Trade savedTrade = tradeRepo.save(trade);
 
-        TransactionStatus status = TransactionAspectSupport.currentTransactionStatus();
-        log.atInfo().addKeyValue(Main.ATTRIBUTE_PREFIX + ".hash_code", status.hashCode()).log("trade committed for " + trade.customerId);
+        log.atInfo().log("trade committed for " + trade.customerId);
 
         return savedTrade;
     }

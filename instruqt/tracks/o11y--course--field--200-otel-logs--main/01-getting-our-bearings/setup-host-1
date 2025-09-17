@@ -5,6 +5,24 @@ export INSTRUQT_TRACK_SLUG=o11y--course--field--200-otel-logs--main
 
 /opt/workshops/clone-code.sh -r ty-elastic/instruqt_$INSTRUQT_TRACK_SLUG -d false
 
+# ------------- VIEW
+
+source /workspace/workshop/instruqt/scripts/elastic-view.sh
+
+# ------------- AI ASSISTANT
+
+source /workspace/workshop/instruqt/scripts/elastic-completion.sh
+
+# ------------- STREAMS
+
+source /workspace/workshop/instruqt/scripts/elastic-streams.sh
+
+# ------------- OTEL
+
+source /workspace/workshop/instruqt/scripts/elastic-otel.sh
+
+# ------------- VSCODE
+
 WORKSPACE_DIR=/workspace
 WORKSHOP_DIR=$WORKSPACE_DIR/workshop
 echo '{

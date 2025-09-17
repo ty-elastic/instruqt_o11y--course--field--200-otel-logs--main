@@ -35,11 +35,11 @@ if [ "$otel" = "true" ]; then
     cd collector
     rm -rf values.yaml
     curl -o values.yaml https://raw.githubusercontent.com/elastic/elastic-agent/refs/tags/v9.0.3/deploy/helm/edot-collector/kube-stack/values.yaml
-    if [ -d "_courses/$variant" ]; then
-        echo $variant;
-        patch < _courses/$variant/init.patch
-        envsubst < values.yaml > values.yaml.tmp && mv values.yaml.tmp values.yaml
-    fi
+    # if [ -d "_courses/$variant" ]; then
+    #     echo $variant;
+    #     patch < _courses/$variant/init.patch
+    #     envsubst < values.yaml > values.yaml.tmp && mv values.yaml.tmp values.yaml
+    # fi
     helm upgrade --install opentelemetry-kube-stack open-telemetry/opentelemetry-kube-stack \
     --namespace opentelemetry-operator-system \
     --values 'values.yaml' \
