@@ -1,0 +1,14 @@
+flowchart LR
+    subgraph Collector[OpenTelemetry Collector]
+        FileRecv[Receiver: filelog + ottl]
+        ElasticExporter[Exporter: Elasticsearch]
+        FileRecv ==> ElasticExporter
+    end
+
+    Service1 == "log / text" ==> File
+    File == "log / text" ==> FileRecv
+
+    subgraph Service1[service]
+    end
+
+    ElasticExporter == "span,metric,log / http" ==> nodeId(((Elasticsearch)))

@@ -1,0 +1,177 @@
+--- values.yaml	2025-07-15 12:06:00
++++ o11y--course--field--200-otel-logs--main/values_receivercreator.yaml	2025-07-15 10:56:09
+@@ -6,6 +6,7 @@
+   manager:
+     extraArgs:
+       - --enable-go-instrumentation
++      - --enable-nginx-instrumentation
+   admissionWebhooks:
+     certManager:
+       enabled: false # For production environments, it is [recommended to use cert-manager for better security and scalability](https://github.com/open-telemetry/opentelemetry-helm-charts/tree/main/charts/opentelemetry-operator#tls-certificate-requirement).
+@@ -16,8 +17,9 @@
+   create: true # Install the OpenTelemetry Operator CRDs.
+ defaultCRConfig:
+   image:
+-    repository: "docker.elastic.co/elastic-agent/elastic-agent"
+-    tag: "9.0.3"
++    repository: "us-central1-docker.pkg.dev/elastic-sa/tbekiares/otelcol"
++    tag: "latest"
++  imagePullPolicy: Always
+   targetAllocator:
+     enabled: false # Enable/disable the Operator's Target allocator.
+     # Refer to: https://github.com/open-telemetry/opentelemetry-operator/tree/main/cmd/otel-allocator
+@@ -192,9 +194,17 @@
+         value: ""
+       - name: ELASTIC_AGENT_OTEL
+         value: '"true"'
++    volumeMounts:
++      - name: varlogpods
++        mountPath: /var/log/pods
++        readOnly: true
++    volumes:
++      - name: varlogpods
++        hostPath:
++          path: /var/log/pods
+     presets:
+       logsCollection:
+-        enabled: true # Enable/disable the collection of node's logs.
++        enabled: false # Enable/disable the collection of node's logs.
+         storeCheckpoints: true # Store checkpoints for log collection, allowing for resumption from the last processed log.
+     hostNetwork: true # Use the host's network namespace. This allows the daemon to access the network interfaces of the host directly.
+     securityContext: # Run the daemon as the root user and group for proper metrics collection.
+@@ -202,6 +212,11 @@
+       runAsGroup: 0
+     scrape_configs_file: "" # [Prometheus metrics](https://github.com/open-telemetry/opentelemetry-helm-charts/tree/main/charts/opentelemetry-kube-stack#scrape_configs_file-details)
+     config:
++      extensions:
++        k8s_observer:
++          observe_nodes: true
++          observe_services: true
++          observe_ingresses: true
+       exporters:
+         # [Debug exporter](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/debugexporter/README.md)
+         debug:
+@@ -338,6 +353,46 @@
+               - tag_name: app.label.version
+                 key: app.kubernetes.io/version
+                 from: pod
++        k8sattributes/logs:
++          filter:
++            # Only retrieve pods running on the same node as the collector
++            node_from_env_var: OTEL_K8S_NODE_NAME
++          passthrough: false
++          pod_association:
++            # Below association takes a look at the k8s.pod.ip and k8s.pod.uid resource attributes or connection's context, and tries to match it with the pod having the same attribute.
++            - sources:
++                - from: resource_attribute
++                  name: k8s.pod.ip
++            - sources:
++                - from: resource_attribute
++                  name: k8s.pod.uid
++            - sources:
++                - from: connection
++          extract:
++            annotations:
++              - tag_name: com.example.logs.format
++                key: com.example.logs/format
++                from: pod
++              - tag_name: com.example.logs.flask
++                key: com.example.logs/flask
++                from: pod
++        transform/parse_flask:
++          error_mode: ignore
++          log_statements:
++            - context: log
++              conditions:
++                - body != nil and resource.attributes["com.example.logs.flask"] == "true"
++              statements:
++                - set(cache, ExtractGrokPatterns(body, "%{IP:client_address} - - \\[%{GREEDYDATA:time}\\] \x22.*(?<method>(GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH|CONNECT|TRACE)) %{URIPATH:path}(?:%{URIPARAM:param})? %{WORD:protocol_name}/%{NUMBER:protocol_version}.*\x22 %{NUMBER:status_code} -", true))
++                - set(attributes["http.method"], cache["method"]) where cache["method"] != nil
++                - set(attributes["http.url"], Concat([cache["path"], cache["query"]], "")) where cache["path"] != nil and cache["query"] != nil
++                - set(attributes["url.path"], cache["path"]) where cache["path"] != nil
++                - set(attributes["url.query"], cache["query"]) where cache["query"] != nil            
++                - set(attributes["http.status_code"], cache["status_code"]) where cache["status_code"] != nil       
++                - set(attributes["client.address"], cache["client_address"]) where cache["client_address"] != nil   
++                - set(attributes["network.protocol.name"], cache["protocol_name"]) where cache["protocol_name"] != nil 
++                - set(attributes["network.protocol.version"], cache["protocol_version"]) where cache["protocol_version"] != nil 
++                - set(time, Time(Concat([cache["time"], "UTC"], " "), "%d/%b/%Y %H:%M:%S %Z")) where cache["time"] != nil 
+       receivers:
+         # [OTLP Receiver](https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver/otlpreceiver)
+         otlp:
+@@ -346,21 +401,13 @@
+               endpoint: 0.0.0.0:4317
+             http:
+               endpoint: 0.0.0.0:4318
+-        # [File Log Receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/filelogreceiver)
+-        filelog:
+-          retry_on_failure:
++        receiver_creator/logs:
++          watch_observers: [k8s_observer]
++          discovery:
+             enabled: true
+-          start_at: end
+-          exclude:
+-            # exlude collector logs
+-            - /var/log/pods/*opentelemetry-kube-stack*/*/*.log
+-          include:
+-            - /var/log/pods/*/*/*.log
+-          include_file_name: false
+-          include_file_path: true
+-          operators:
+-            - id: container-parser # Extract container's metadata
+-              type: container
++          default_annotations:
++            io.opentelemetry.discovery.logs/enabled: "true"
++          receivers: {}
+         # [Hostmetrics Receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/hostmetricsreceiver)
+         hostmetrics:
+           collection_interval: 10s
+@@ -466,12 +513,29 @@
+               enabled: true
+           extra_metadata_labels:
+             - container.id
++
+       # [Service Section](https://opentelemetry.io/docs/collector/configuration/#service)
++      connectors:
++        otlpjson: {}
++        routing/logs:
++          default_pipelines: [logs/node]
++          table:
++            - context: resource
++              condition: attributes["com.example.logs.format"] == "otlpjson"
++              pipelines: [logs/node_raw_otlpjson]
+       service:
++        extensions: [k8s_observer]
+         pipelines:
++          logs/node_raw:
++            receivers: [receiver_creator/logs]
++            processors: [k8sattributes/logs]
++            exporters: [routing/logs]
++          logs/node_raw_otlpjson:
++            receivers: [routing/logs]
++            exporters: [otlpjson]
+           logs/node:
+             receivers:
+-              - filelog
++              - routing/logs
+             processors:
+               - batch
+               - k8sattributes
+@@ -512,7 +576,10 @@
+           logs/apm:
+             receivers:
+               - otlp
++              - otlpjson
+             processors:
++              - k8sattributes/logs
++              - transform/parse_flask
+               - batch
+               - resource/hostname
+             exporters:
+@@ -683,4 +750,4 @@
+   python:
+     image: docker.elastic.co/observability/elastic-otel-python:1.0.0
+   go:
+-    image: ghcr.io/open-telemetry/opentelemetry-go-instrumentation/autoinstrumentation-go:v0.21.0
++    image: ghcr.io/open-telemetry/opentelemetry-go-instrumentation/autoinstrumentation-go:v0.21.0
+\ No newline at end of file

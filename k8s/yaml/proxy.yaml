@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy
+  namespace: $NAMESPACE
+  labels:
+    app: trading
+    service: proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trading
+      service: proxy
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: trading
+        service: proxy
+      annotations:
+        io.opentelemetry.discovery.logs/enabled: "false"
+    spec:
+      containers:
+        - image: $REPO/proxy:$COURSE
+          imagePullPolicy: Always
+          name: proxy
+          ports:
+            - containerPort: 80
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: trading
+    service: proxy
+  name: proxy
+  namespace: $NAMESPACE
+spec:
+  ports:
+    - name: proxy
+      port: 9090
+      targetPort: 80
+  selector:
+    app: trading
+    service: proxy

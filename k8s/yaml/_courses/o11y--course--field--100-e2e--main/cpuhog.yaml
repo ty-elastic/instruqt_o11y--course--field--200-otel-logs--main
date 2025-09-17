@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cpuhog
+  namespace: trading2
+  labels:
+    app: trading
+    service: cpuhog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trading
+      service: cpuhog
+  template:
+    metadata:
+      labels:
+        app: trading
+        service: cpuhog
+    spec:
+      containers:
+        - name: cpuhog
+          image: $REPO/cpuhog:$COURSE
+          imagePullPolicy: Always
+      restartPolicy: Always
+      nodeName: gke-tbekiares-demo-default-pool-35dc2e16-0tbm

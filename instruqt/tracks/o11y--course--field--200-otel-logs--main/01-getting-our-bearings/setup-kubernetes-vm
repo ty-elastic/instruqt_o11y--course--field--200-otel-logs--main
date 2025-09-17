@@ -1,0 +1,3 @@
+/opt/workshops/elastic-view.sh -v oblt
+
+/opt/workshops/elastic-llm.sh -m gpt-4o-westus -k true -p true

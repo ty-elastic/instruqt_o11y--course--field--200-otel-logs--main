@@ -1,0 +1,81 @@
+--- ../postgresql.yaml	2025-06-26 16:33:18
++++ o11y--course--field--200-otel-logs--main/postgresql.yaml	2025-06-30 10:42:10
+@@ -18,6 +18,78 @@
+       labels:
+         app: trading
+         service: postgresql
++      annotations:
++        io.opentelemetry.discovery.logs/enabled: "true"
++        io.opentelemetry.discovery.logs/config: |
++          operators:
++          - type: container
++          - type: regex_parser
++            on_error: send
++            parse_from: body
++            regex: '^(?P<timestamp_field>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}\s[A-z]+)\s\[\d{2}\]\s(?P<severity_field>[A-Z]+):\s*(?<msg_field>.*?)\s*(\/\*traceparent=\x27(?P<version>\d*)?-(?P<trace_id>\S*)-(?P<span_id>\S*)-(?P<trace_flags>\d*)\x27\*\/)?$'
++            timestamp:
++              parse_from: attributes.timestamp_field
++              on_error: send
++              layout_type: strptime
++              layout: '%Y-%m-%d %H:%M:%S.%L %Z'
++            trace:
++              trace_id:
++                parse_from: attributes.trace_id
++                on_error: send
++              span_id:
++                parse_from: attributes.span_id
++                on_error: send
++              trace_flags:
++                parse_from: attributes.trace_flags
++                on_error: send
++            severity:
++              parse_from: attributes.severity_field
++              on_error: send
++              mapping:
++                warn: 
++                  - WARNING
++                  - NOTICE
++                error:
++                  - ERROR
++                info: 
++                  - LOG
++                  - INFO
++                  - STATEMENT
++                debug1:
++                  - DEBUG1
++                debug2:
++                  - DEBUG2
++                debug3:
++                  - DEBUG3
++                debug4:
++                  - DEBUG4
++                debug5:
++                  - DEBUG5
++                fatal:
++                  - FATAL
++                  - PANIC
++          - type: move
++            on_error: send_quiet
++            from: attributes.msg_field
++            to: body
++          - type: remove
++            on_error: send_quiet
++            field: attributes.timestamp_field
++          - type: remove
++            on_error: send_quiet
++            field: attributes.severity_field
++          - type: remove
++            on_error: send_quiet
++            field: attributes.trace_version
++          - type: remove
++            on_error: send_quiet
++            field: attributes.trace_id
++          - type: remove
++            on_error: send_quiet
++            field: attributes.span_id
++          - type: remove
++            on_error: send_quiet
++            field: attributes.trace_flags
+     spec:
+       containers:
+         - name: postgresql

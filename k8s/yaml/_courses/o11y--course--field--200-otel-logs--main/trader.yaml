@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: trading
+    service: trader
+  name: trader
+  namespace: trading
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trading
+      service: trader
+  template:
+    metadata:
+      annotations:
+        instrumentation.opentelemetry.io/inject-python: "opentelemetry-operator-system/elastic-instrumentation"
+        com.example.logs/flask: "true"
+      labels:
+        app: trading
+        service: trader
+    spec:
+      containers:
+        - name: trader
+          image: $REPO/trader:$COURSE
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9001
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: trading
+    service: trader
+  name: trader
+  namespace: trading
+spec:
+  ports:
+    - name: trader
+      port: 9001
+      targetPort: 9001
+  selector:
+    app: trading
+    service: trader
+---

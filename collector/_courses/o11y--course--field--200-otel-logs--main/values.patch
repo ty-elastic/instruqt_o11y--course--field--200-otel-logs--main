@@ -1,0 +1,48 @@
+--- values.yaml	2025-03-31 14:32:17
++++ collector.yaml	2025-03-31 14:32:00
+@@ -209,6 +209,29 @@
+           tls:
+             insecure: true
+       processors:
++
++        transform/parse_json_body:
++            error_mode: ignore
++            log_statements:
++              - context: log
++                conditions:
++                  - body != nil and Substring(body, 0, 2) == "{\""
++                statements:
++                  - set(cache, ParseJSON(body))
++                  - flatten(cache, "")
++                  - merge_maps(attributes, cache, "upsert")
++
++                  - set(time, Time(attributes["_meta.date"], "%Y-%m-%dT%H:%M:%SZ"))
++                  - delete_key(log.attributes, "_meta.date")
++
++                  - set(severity_text, attributes["_meta.logLevelName"])
++                  - set(severity_number, attributes["_meta.logLevelId"])
++                  - delete_key(log.attributes, "_meta.logLevelName")
++                  - delete_key(log.attributes, "_meta.logLevelId")
++
++                  - set(body, attributes["0"])
++                  - delete_key(log.attributes, "0")
++
+         # [Batch Processor](https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/batchprocessor)
+         batch: {}
+         # [Resource Detection Processor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/resourcedetectionprocessor)
+@@ -466,6 +489,7 @@
+             receivers:
+               - filelog
+             processors:
++              - transform/parse_json_body
+               - batch
+               - k8sattributes
+               - resourcedetection/system
+@@ -506,6 +530,7 @@
+             receivers:
+               - otlp
+             processors:
++              - transform/parse_json_body
+               - batch
+               - resource/hostname
+             exporters:

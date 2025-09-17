@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monkey
+  namespace: trading
+  labels:
+    app: trading
+    service: monkey
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trading
+      service: monkey
+  template:
+    metadata:
+      annotations:
+        instrumentation.opentelemetry.io/inject-python: "opentelemetry-operator-system/elastic-instrumentation"
+        com.example.logs/flask: "true"
+      labels:
+        app: trading
+        service: monkey
+    spec:
+      containers:
+        - name: monkey
+          image: $REPO/monkey:$COURSE
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9002
+          env:
+            - name: TRADER_SERVICE
+              value: proxy:9090/trader
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: trading
+    service: monkey
+  name: monkey
+  namespace: trading
+spec:
+  ports:
+    - name: monkey
+      port: 9002
+      targetPort: 9002
+  selector:
+    app: trading
+    service: monkey
+---

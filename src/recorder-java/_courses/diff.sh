@@ -1,0 +1,1 @@
+diff -Naru ../src/main/java/com/example/recorder/TradeRecorder.java o11y--course--field--200-otel-logs--main/TradeRecorder.java > o11y--course--field--200-otel-logs--main/TradeRecorder.patch

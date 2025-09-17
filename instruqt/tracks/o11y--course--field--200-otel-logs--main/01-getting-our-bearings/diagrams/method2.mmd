@@ -1,0 +1,31 @@
+flowchart LR
+    subgraph Collector[OpenTelemetry Collector]
+        OTLPRecv[Receiver: otlp]
+        FileRecv[Receiver: filelog]
+        Processor[Parser: Transform/ottl]
+        ElasticExporter[Exporter: Elasticsearch]
+        OtlpJsonConnector[Connector: otlpjson]
+        FileRecv ==> OtlpJsonConnector
+        OtlpJsonConnector ==> Processor ==> ElasticExporter
+        OTLPRecv ==> ElasticExporter
+    end
+
+    OtlpJsonExporter == "log / otlpjson" ==> File
+    File == "log / otlpjson" ==> FileRecv
+
+    subgraph Service1[service]
+        subgraph LoggingFramework[Logging Framework]
+            LAPI[log API]
+            LAPI ==> OtlpJsonExporter[Exporter: otlpjson]
+        end
+        
+        OTELSDK[OTel SDK]
+        OTELSDK -.-> OtlpJsonExporter
+        func[function] == "log()" ==> LAPI
+        func == "span" ==> OTELSDK
+        func == "metric" ==> OTELSDK
+
+        OTELSDK == "span,metric / otlp" ==> OTLPRecv
+    end
+
+    ElasticExporter == "span,metric,log / http" ==> nodeId(((Elasticsearch)))

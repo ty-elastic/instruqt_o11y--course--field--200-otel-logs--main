@@ -1,0 +1,6 @@
+flask
+requests
+Werkzeug
+
+elastic-opentelemetry
+opentelemetry-processor-baggage
