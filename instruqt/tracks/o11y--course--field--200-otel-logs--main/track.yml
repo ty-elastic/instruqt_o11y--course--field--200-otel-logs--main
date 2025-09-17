@@ -12,7 +12,7 @@ developers:
 show_timer: true
 idle_timeout: 900
 timelimit: 7200
-sandbox_preset: managed-vm-elastic-9-1-0-snapshot
+sandbox_preset: managed-vm-elastic-9-1-3
 lab_config:
   sidebar_enabled: true
   feedback_recap_enabled: true
@@ -22,5 +22,5 @@ lab_config:
     name: modern-dark
   override_challenge_layout: false
   hideStopButton: false
-checksum: "9161322402698162474"
+checksum: "14381428678034173396"
 enhanced_loading: false

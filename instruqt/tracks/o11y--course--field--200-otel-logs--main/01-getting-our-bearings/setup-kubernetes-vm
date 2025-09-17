@@ -26,7 +26,3 @@ source /workspace/workshop/instruqt/scripts/elastic-completion.sh
 
 source /workspace/workshop/instruqt/scripts/elastic-streams.sh
 
-# ------------- OTEL
-
-source /workspace/workshop/instruqt/scripts/elastic-otel.sh
-
