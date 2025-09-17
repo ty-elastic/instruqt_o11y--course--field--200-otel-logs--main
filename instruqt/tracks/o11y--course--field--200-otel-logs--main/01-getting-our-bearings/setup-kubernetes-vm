@@ -1,3 +1,24 @@
-/opt/workshops/elastic-view.sh -v oblt
+source /opt/workshops/elastic-retry.sh
+export $(curl http://kubernetes-vm:9000/env | xargs)
 
-/opt/workshops/elastic-llm.sh -m gpt-4o-westus -k true -p true
+# ------------- FIX Kibana
+
+kubectl rollout restart deployment/kibana-kb
+retry_command_lin check_es_health
+
+# ------------- VIEW
+
+source /workspace/workshop/instruqt/scripts/elastic-view.sh
+
+# ------------- AI ASSISTANT
+
+source /workspace/workshop/instruqt/scripts/elastic-completion.sh
+
+# ------------- STREAMS
+
+source /workspace/workshop/instruqt/scripts/elastic-streams.sh
+
+# ------------- OTEL
+
+source /workspace/workshop/instruqt/scripts/elastic-otel.sh
+
