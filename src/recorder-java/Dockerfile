@@ -5,10 +5,10 @@ COPY _courses _courses
 
 ARG VARIANT=none
 
-RUN if [ -d "_courses/$VARIANT" ]; then \
-        echo $VARIANT; \
-        patch < _courses/$VARIANT/init.patch; \
-    fi
+# RUN if [ -d "_courses/$VARIANT" ]; then \
+#         echo $VARIANT; \
+#         patch < _courses/$VARIANT/init.patch; \
+#     fi
 
 WORKDIR /usr/src/app
 RUN --mount=type=cache,target=/root/.m2 mvn package -Dmaven.test.skip

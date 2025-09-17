@@ -57,7 +57,7 @@ Additionally, exporting logs from a service using the OTel SDK offers the follow
 Configuration
 ===
 
-Most of the languages supported by OpenTelemetry are automatically instrumented for logging via OTLP by default. In the case of Java, for example, the OTel SDK, when in zero-code instrumentation, will automatically attach 
+Most of the languages supported by OpenTelemetry are automatically instrumented for logging via OTLP by default. In the case of Java, for example, the OTel SDK, when in zero-code instrumentation, will automatically attach
 
 Let's have a look at the logs from our `recorder-java` service:
 

@@ -18,10 +18,10 @@ COPY app.py .
 COPY model.py .
 COPY _courses _courses
 
-RUN if [ -d "_courses/$VARIANT" ]; then \
-        echo $VARIANT; \
-        patch < _courses/$VARIANT/init.patch; \
-    fi
+# RUN if [ -d "_courses/$VARIANT" ]; then \
+#         echo $VARIANT; \
+#         patch < _courses/$VARIANT/init.patch; \
+#     fi
 
 ENV ROUTER_HOST="router"
 ENV PYTHONUNBUFFERED=1
