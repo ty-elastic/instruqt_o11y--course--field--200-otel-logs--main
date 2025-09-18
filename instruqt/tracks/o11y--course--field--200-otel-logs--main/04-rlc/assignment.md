@@ -24,6 +24,9 @@ difficulty: ""
 timelimit: 600
 enhanced_loading: null
 ---
+
+Modifying the collector config to parse specific logs feels awkward. it might make sense if most of your custom logs follow a common format, but typcially the format is unique and bespoke to specific apps. If your apps are deployed on k8s, we can use the RLC to move the parsing config to the app yaml rather than values.yaml.
+
 Receiver Log Creator
 
 look at postgres logs (no parse)

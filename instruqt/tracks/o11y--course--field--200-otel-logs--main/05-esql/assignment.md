@@ -25,6 +25,8 @@ timelimit: 600
 enhanced_loading: null
 ---
 
+In many cases, you might be ok to parse your logs on-demand. As an example, i can use ES|QL to parse my nginx proxy logs as needed.
+
 ## ES|QL
 
 Let's first try query-time parsing using ES|QL:

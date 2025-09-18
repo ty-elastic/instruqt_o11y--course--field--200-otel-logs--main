@@ -25,7 +25,20 @@ timelimit: 600
 enhanced_loading: null
 ---
 
+Many apps write logs to disk or to stdout, and then to disk. To accomodate this, we can use the filelogreceiver that is part of the OTel Collector. Like Filebeat, it scrapes logs. It can be deployed by hand, or if on k8s, using the OTel Operator.
 
+Let's first look at a service that is writing logs to disk.
+kubectl get pods
+kubectl logs router
+
+clearly stdout.
+
+check elastic.
+
+
+
+
+Like Filebeat or logstash, you can do some parsing of logs at the edge.
 
 Making Sense of JSON Logs
 ===

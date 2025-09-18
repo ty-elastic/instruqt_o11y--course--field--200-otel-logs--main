@@ -35,7 +35,7 @@ source /opt/workshops/vscode-start.sh
 
 # ------------- OTEL
 
-source /workspace/workshop/instruqt/scripts/elastic-otel.sh
+#source /workspace/workshop/instruqt/scripts/elastic-otel.sh
 
 # ------------- DEPLOY
 
