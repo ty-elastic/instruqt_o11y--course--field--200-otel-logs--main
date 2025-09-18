@@ -50,12 +50,12 @@ if [ "$otel" = "true" ]; then
 
     # ---------- OPERATOR
 
-    cd operator
-    if [ -d "_courses/$variant" ]; then
-        echo "applying variant"
-        envsubst < _courses/$variant/init.yaml | kubectl -n opentelemetry-operator-system apply -f -
-    fi
-    cd ..
+    # cd operator
+    # if [ -d "_courses/$variant" ]; then
+    #     echo "applying variant"
+    #     envsubst < _courses/$variant/init.yaml | kubectl -n opentelemetry-operator-system apply -f -
+    # fi
+    # cd ..
 
     sleep 30
 fi

@@ -25,6 +25,7 @@ done
 repo=us-central1-docker.pkg.dev/elastic-sa/tbekiares
 if [ "$local" = "true" ]; then
     docker run -d -p 5093:5000 --restart=always --name registry registry:2
+    repo=localhost:5093
 fi
 
 if [ "$build_service" = "true" ]; then

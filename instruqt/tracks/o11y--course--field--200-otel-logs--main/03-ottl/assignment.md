@@ -41,6 +41,7 @@ service.name : "router"
 4. Look at `body.text` field (it is encoded JSON)
 
 ## JSON Parsing in the Collector
+
 Get a copy of the latest values.yaml
 1. [button label="Elastic"](tab-0)
 2. Click `Add data` in lower-left

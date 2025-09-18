@@ -31,33 +31,35 @@ In this model, we will be sending logs directly from a service to an OpenTelemet
 
 Looking at the diagram:
 1) A service leverages an existing logging framework (e.g., [logback](https://logback.qos.ch) in Java) to generate log statements
-2) On startup, the OTel SDK injects a new output module into the logging framework. This module formats the log metadata to appropriate OTel semantic conventions (e.g., log.level), adds appropriate contextual metadata (e.g., k8s namespace), and outputs the log lines via OTLP (typically buffered) to a Collector
-3) a Collector (typically, but not necessarily) on the same node as the service receives the log lines via the `otlp` receiver
+2) On startup, the OTel SDK automatically injects a new output module into the logging framework. This module formats the log metadata to appropriate OTel semantic conventions (e.g., log.level), adds appropriate contextual metadata (e.g., k8s namespace), and outputs the log lines via OTLP (typically buffered) to a configured OTel Collector
+3) an OTel Collector (typically, but not necessarily) on the same node as the service receives the log lines via the `otlp` receiver
 4) the Collector adds additional metadata and optionally applies parsing via a Transform Processor
 5) the Collector then outputs the logs downstream (either directly to Elasticsearch, or more typically through a gateway Collector, and then to Elasticsearch)
 
 While this model is relatively simple to implement, it assumes 2 things:
 
-1) The service can be instrumented with OpenTelemetry (either through runtime zero-configuration instrumentation, or through explicit instrumentation). This essentially rules out use of this method for most "third-party" applications and services.
+1) The service can be instrumented with OpenTelemetry (either through runtime zero-configuration instrumentation, or through explicit instrumentation). This essentially rules out use of this method for most opaque, third-party applications and services.
 
-2) Your OTel pipelines are robust enough to forgo file-based logging. Traditional logging relied on services writing to files and agents "tailing" those log files. File-based logging inherently adds a semi-reliable, FIFO, disk-based queue between services and the collector. If there is a downstream failure in the telemetry pipeline (e.g., a failure in the Collector or downstream of the Collector), the file will serve as a temporary, reasonably robust buffer.
+2) Your OTel pipelines are robust enough to forgo file-based logging. Traditional logging relied on services writing to files and agents "tailing" those log files. File-based logging inherently adds a semi-reliable, FIFO, disk-based queue between services and the Collector. If there is a downstream failure in the telemetry pipeline (e.g., a failure in the Collector or downstream of the Collector) or back-pressure from Elasticsearch, the file will serve as a temporary, reasonably robust buffer. Notably, this concern can be mitigated with Collector-based disk queues and/or the use of a Kafka-like queue somewhere in-between the first Collector and Elasticsearch. Such a service is, in fact, provided by Elastic's Managed OpenTelemetry Collector.
 
-That said, there are inherent advantages to using a network-based logging protocol where possible: namely:
-1) not having to deal with file rotation
-2) less io overhead (no file operations)
-3) the Collector need not be local to the node running the applications (though you would typically want a Collector per node for other reasons)
+There are, of course, many advantages to using OTLP as a logging protocol where possibly:
+1) you don't have to deal with file rotation or disk overflow due to logs
+2) there is less io overhead (no file operations) on the node
+3) the log Collector need not be local to the node running the applications (though you would typically want a Collector per node for other reasons)
 
 Additionally, exporting logs from a service using the OTel SDK offers the following benefits:
 1) logs are automatically formatted with OTel Semantic Conventions
 2) key/values applied to log statements are automatically emitted as attributes
-3) traceid and spanid are automatically added
+3) traceid and spanid are automatically added when appropriate
 4) contextual metadata (e.g., node name) are automatically emitted as attributes
-5) baggage can be automatically applied as attributes
+5) custom metadata in baggage can be automatically applied as attributes to each log line
+
+All of the above leads to logs with rich context and metadata, increasing this utility and value.
 
 Configuration
 ===
 
-Most of the languages supported by OpenTelemetry are automatically instrumented for logging via OTLP by default. In the case of Java, for example, the OTel SDK, when in zero-code instrumentation, will automatically attach
+Most of the languages supported by OpenTelemetry are automatically instrumented for logging via OTLP by default. In the case of Java, for example, the OTel SDK, when in zero-code instrumentation, will automatically attach an OTLP exporter to either [Logback](https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/logback/logback-appender-1.0/library) or [Log4j](https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/log4j/log4j-appender-2.17/library).
 
 Let's have a look at the logs from our `recorder-java` service:
 
@@ -93,6 +95,20 @@ Let's further validate that no logs are being written to stdout (which would be 
 Note that there are no logs being written to stdout from `recorder-java` because we have not configured any appenders in the logback configuration.
 
 This confirms that logs coming from the `recorder-java` application to our OTel Collector via OTLP, and not by way of a log file.
+
+Correlation
+===
+
+Let's see some of those advantages we talked about in action! For one, any log statement emitted in the context of a span will automatically be tagged with the current trace.id and span.id. What makes this incredibly powerful is that we can then see all of our logs in one place for a given trace.
+
+1. Elastic APM
+2. Trader
+3. Transactions
+4. Scroll to bottom
+5. Trace Sample
+6. Logs
+
+Find a log line from recorder-java and pop it open. Note the presence of a trace.id attribute. This was automatically added for us by the OTel SDK. 
 
 Attributes
 ===

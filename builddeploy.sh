@@ -21,12 +21,12 @@ do
    esac
 done
 
-echo $local
-if [ "$local" = "true" ]; then
-   docker run -d -p 5093:5000 --restart=always --name registry registry:2
-fi
+# echo $local
+# if [ "$local" = "true" ]; then
+#    docker run -d -p 5093:5000 --restart=always --name registry registry:2
+# fi
 
 echo $service
 
-./build.sh -a $arch -c $course -s $service -l $local -v $variant -x true -y false -z false
+./build.sh -a $arch -c $course -s $service -l $local -v $variant -x true -y false
 ./deploy.sh -c $course -s $service -l $local -v $variant -o $otel -n $namespace -r $region
