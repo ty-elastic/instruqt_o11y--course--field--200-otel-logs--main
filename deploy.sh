@@ -42,7 +42,7 @@ if [ "$otel" = "true" ]; then
     # fi
     helm upgrade --install opentelemetry-kube-stack open-telemetry/opentelemetry-kube-stack \
     --namespace opentelemetry-operator-system \
-    --values 'values.yaml' \
+    --values 'https://raw.githubusercontent.com/elastic/elastic-agent/refs/tags/v9.1.3/deploy/helm/edot-collector/kube-stack/values.yaml' \
     --version '0.6.3'
     
     kubectl -n opentelemetry-operator-system rollout restart deployment/opentelemetry-kube-stack-opentelemetry-operator 

@@ -42,13 +42,17 @@ service.name : "router"
 
 ## JSON Parsing in the Collector
 
+We are using the OTel Operator with a stock config provided by Elastic to insert instrumentation into our applications. To start parsing JSON logs, we will need to modify that configuration.
+
+Let's first get a copy of the values.yaml.
+
 Get a copy of the latest values.yaml
 1. [button label="Elastic"](tab-0)
 2. Click `Add data` in lower-left
 3. Click `Kubernetes` > `OpenTelemetry (Full Observability)`
 4. Copy the URL to the `values.yaml`
 ```
-https://raw.githubusercontent.com/elastic/elastic-agent/refs/tags/v8.17.4/deploy/helm/edot-collector/kube-stack/values.yaml
+https://raw.githubusercontent.com/elastic/elastic-agent/refs/tags/v9.1.3/deploy/helm/edot-collector/kube-stack/values.yaml
 ```
 7. [button label="Terminal"](tab-1)
 8. Download it with `curl`

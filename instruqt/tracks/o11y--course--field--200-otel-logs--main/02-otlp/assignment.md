@@ -108,7 +108,7 @@ Let's see some of those advantages we talked about in action! For one, any log s
 5. Trace Sample
 6. Logs
 
-Find a log line from recorder-java and pop it open. Note the presence of a trace.id attribute. This was automatically added for us by the OTel SDK. 
+Find a log line from recorder-java and pop it open. Note the presence of a trace.id attribute. This was automatically added for us by the OTel SDK.
 
 Attributes
 ===
