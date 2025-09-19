@@ -28,6 +28,9 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 9001
+          env:
+            - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
+              value: "true"
       restartPolicy: Always
 ---
 apiVersion: v1

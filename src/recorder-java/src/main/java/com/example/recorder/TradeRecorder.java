@@ -3,10 +3,17 @@ package com.example.recorder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.*;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import ch.qos.logback.classic.pattern.Util;
 
 /**
  * Service layer is where all the business logic lies
@@ -15,7 +22,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 @RequiredArgsConstructor
 @Slf4j
 public class TradeRecorder {
-
+    
+    private final Utilities utilities;
     private final TradeRepo tradeRepo;
     private boolean pgStatEnabled = false;
 
@@ -36,7 +44,7 @@ public class TradeRecorder {
 
         Trade savedTrade = tradeRepo.save(trade);
 
-        log.atInfo().log("trade committed for " + trade.customerId);
+        log.atInfo().addKeyValue(Main.ATTRIBUTE_PREFIX + ".gc_time", utilities.getGarbageCollectorDeltaTime()).log("trade committed for " + trade.customerId);
 
         return savedTrade;
     }

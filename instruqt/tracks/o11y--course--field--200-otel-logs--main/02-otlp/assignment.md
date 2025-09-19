@@ -25,7 +25,7 @@ timelimit: 600
 enhanced_loading: null
 ---
 
-In this model, we will be sending logs directly from a service to an OpenTelemetry [Collector](https://opentelemetry.io/docs/collector/) over the network using the [OTLP](https://opentelemetry.io/docs/specs/otel/protocol/) protocol. This is the default mechanism the OpenTelemetry SDKs use for exporting logs from a service.
+In this model, we will be sending logs directly from a service to an OpenTelemetry [Collector](https://opentelemetry.io/docs/collector/) over the network using the [OTLP](https://opentelemetry.io/docs/specs/otel/protocol/) protocol. This is the default mechanism most OpenTelemetry SDKs use for exporting logs from a service.
 
 ![method-1](../assets/method1.svg)
 

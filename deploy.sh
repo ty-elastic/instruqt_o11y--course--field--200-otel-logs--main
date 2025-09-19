@@ -29,37 +29,37 @@ export REPO=$repo
 export NAMESPACE=$namespace
 export REGION=$region
 
-# if [ "$otel" = "true" ]; then
-#     # ---------- COLLECTOR
+if [ "$otel" = "true" ]; then
+    # ---------- COLLECTOR
 
-#     cd collector
-#     rm -rf values.yaml
-#     curl -o values.yaml https://raw.githubusercontent.com/elastic/elastic-agent/refs/tags/v9.0.3/deploy/helm/edot-collector/kube-stack/values.yaml
-#     # if [ -d "_courses/$variant" ]; then
-#     #     echo $variant;
-#     #     patch < _courses/$variant/init.patch
-#     #     envsubst < values.yaml > values.yaml.tmp && mv values.yaml.tmp values.yaml
-#     # fi
-#     helm upgrade --install opentelemetry-kube-stack open-telemetry/opentelemetry-kube-stack \
-#     --namespace opentelemetry-operator-system \
-#     --values 'https://raw.githubusercontent.com/elastic/elastic-agent/refs/tags/v9.1.3/deploy/helm/edot-collector/kube-stack/values.yaml' \
-#     --version '0.6.3'
+    cd collector
+    rm -rf values.yaml
+    curl -o values.yaml https://raw.githubusercontent.com/elastic/elastic-agent/refs/tags/v9.0.3/deploy/helm/edot-collector/kube-stack/values.yaml
+    # if [ -d "_courses/$variant" ]; then
+    #     echo $variant;
+    #     patch < _courses/$variant/init.patch
+    #     envsubst < values.yaml > values.yaml.tmp && mv values.yaml.tmp values.yaml
+    # fi
+    helm upgrade --install opentelemetry-kube-stack open-telemetry/opentelemetry-kube-stack \
+    --namespace opentelemetry-operator-system \
+    --values 'https://raw.githubusercontent.com/elastic/elastic-agent/refs/tags/v9.1.3/deploy/helm/edot-collector/kube-stack/values.yaml' \
+    --version '0.9.1'
     
-#     kubectl -n opentelemetry-operator-system rollout restart deployment
-#     kubectl -n opentelemetry-operator-system rollout restart daemonset
-#     cd ..
+    kubectl -n opentelemetry-operator-system rollout restart deployment
+    kubectl -n opentelemetry-operator-system rollout restart daemonset
+    cd ..
 
-#     # ---------- OPERATOR
+    # ---------- OPERATOR
 
-#     # cd operator
-#     # if [ -d "_courses/$variant" ]; then
-#     #     echo "applying variant"
-#     #     envsubst < _courses/$variant/init.yaml | kubectl -n opentelemetry-operator-system apply -f -
-#     # fi
-#     # cd ..
+    # cd operator
+    # if [ -d "_courses/$variant" ]; then
+    #     echo "applying variant"
+    #     envsubst < _courses/$variant/init.yaml | kubectl -n opentelemetry-operator-system apply -f -
+    # fi
+    # cd ..
 
-#     sleep 30
-# fi
+    sleep 30
+fi
 
 # envsubst < k8s/yaml/_namespace.yaml | kubectl apply -f -
 # kubectl label ns $namespace namespace-node-affinity=enabled
@@ -70,14 +70,10 @@ if [ "$service" != "none" ]; then
         current_service="${current_service%.*}"
         echo $current_service
         echo $service
+        echo $REGION
         if [[ "$service" == "all" || "$service" == "$current_service" ]]; then
             echo "deploying..."
-            if [ -f "k8s/yaml/_courses/$variant/$current_service.yaml" ]; then
-                echo "applying variant"
-                envsubst < k8s/yaml/_courses/$variant/$current_service.yaml | kubectl apply -f -
-            else
-                envsubst < k8s/yaml/$current_service.yaml | kubectl apply -f -
-            fi
+            envsubst < k8s/yaml/$current_service.yaml | kubectl apply -f -
             kubectl -n $namespace rollout restart deployment/$current_service
         fi
     done

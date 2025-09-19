@@ -43,7 +43,12 @@ def init_otel():
 
     if 'OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED' in os.environ:
         print("enable otel logging")
-        logs.get_logger_provider().add_log_record_processor(BaggageLogRecordProcessor(ALLOW_ALL_BAGGAGE_KEYS))
+        #logs.get_logger_provider().add_log_record_processor(BaggageLogRecordProcessor(ALLOW_ALL_BAGGAGE_KEYS))
+        # Remove the existing stdout handler
+        root_logger = logging.getLogger()
+        for handler in root_logger.handlers:
+            if isinstance(handler, logging.StreamHandler):
+                root_logger.removeHandler(handler)
 
     tracer = trace.get_tracer(__name__)
 
@@ -133,7 +138,7 @@ def trade(*, region, trade_id, customer_id, symbol, day_of_week, shares, share_p
     response['id'] = trade_id
     response['symbol']= symbol
     
-    params={'canary': "true" if canary else "false", 'customer_id': customer_id, 'trade_id': trade_id, 'symbol': symbol, 'shares': shares, 'share_price': share_price, 'action': action}
+    params={'region': region, 'canary': "true" if canary else "false", 'customer_id': customer_id, 'trade_id': trade_id, 'symbol': symbol, 'shares': shares, 'share_price': share_price, 'action': action}
     #print(params)
     if error_db is True:
         params['share_price'] = -share_price

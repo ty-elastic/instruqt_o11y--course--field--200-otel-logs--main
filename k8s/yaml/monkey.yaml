@@ -29,6 +29,8 @@ spec:
           ports:
             - containerPort: 9002
           env:
+            - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
+              value: "true"
             - name: TRADER_SERVICE
               value: proxy:9090/trader
             - name: REGION
