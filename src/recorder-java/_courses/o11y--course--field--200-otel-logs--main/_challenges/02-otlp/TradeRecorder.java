@@ -35,7 +35,7 @@ public class TradeRecorder {
 
         Trade savedTrade = tradeRepo.save(trade);
 
-        log.atInfo().log("trade committed for " + trade.customerId);
+        log.atInfo().addKeyValue(Main.ATTRIBUTE_PREFIX + ".gc_time", utilities.getGarbageCollectorDeltaTime()).log("trade committed for " + trade.customerId);
 
         return savedTrade;
     }

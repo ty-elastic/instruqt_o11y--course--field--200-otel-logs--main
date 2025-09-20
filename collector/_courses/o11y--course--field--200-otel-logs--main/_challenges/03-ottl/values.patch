@@ -1,0 +1,37 @@
+--- ../values.yaml	2025-09-17 13:57:17
++++ o11y--course--field--200-otel-logs--main/_challenges/03-ottl/values.yaml	2025-09-20 10:13:36
+@@ -190,6 +190,26 @@
+           tls:
+             insecure: true
+       processors:
++        transform/parse_json_body:
++            error_mode: ignore
++            log_statements:
++              - context: log
++                conditions:
++                  - body != nil and Substring(body, 0, 2) == "{\""
++                statements:
++                  - set(cache, ParseJSON(body))
++                  - flatten(cache, "")
++                  - merge_maps(attributes, cache, "upsert")
++
++                  - set(time, Time(attributes["_meta.date"], "%Y-%m-%dT%H:%M:%SZ"))
++                  - set(severity_text, attributes["_meta.logLevelName"])
++                  - set(severity_number, attributes["_meta.logLevelId"])
++                  - delete_matching_keys(attributes, "_meta\\..*")
++
++                  - set(body, attributes["0"])
++                  - delete_key(attributes, "0")
++
++                  - replace_all_patterns(attributes, "key", "\\d+\\.", "")
+         # [Batch Processor](https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/batchprocessor)
+         batch: {} # inherit any values from helm chart
+         batch/metrics:
+@@ -432,6 +452,7 @@
+             receivers:
+               - filelog
+             processors:
++              - transform/parse_json_body
+               - batch
+               - k8sattributes
+               - resourcedetection/system

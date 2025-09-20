@@ -6,7 +6,7 @@ variant=none
 
 build_service=true
 build_collector=false
-build_lib=false
+build_lib=true
 
 while getopts "a:l:c:s:x:y:z:v:" opt
 do

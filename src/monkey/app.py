@@ -16,7 +16,6 @@ from faker import Faker
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 
-
 def init_otel(): 
     if 'OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED' in os.environ:
         print("enable otel logging")
@@ -80,6 +79,15 @@ def generate_customers_per_region():
     #print(CUSTOMERS_PER_REGION)
 generate_customers_per_region()
 
+USER_SUBSCRIPTION = ['silver', 'gold', 'platinum']
+SUBSCRIPTION_PER_USER = {}
+def generate_subscription_per_user():
+    for region in CUSTOMERS_PER_REGION.keys():
+        for customer in CUSTOMERS_PER_REGION[region]:
+            SUBSCRIPTION_PER_USER[customer] = random.choice(USER_SUBSCRIPTION)
+    print(SUBSCRIPTION_PER_USER)
+generate_subscription_per_user()
+
 USERAGENTS_PER_USER = {}
 def generate_useragent_per_user():
     for region in CUSTOMERS_PER_REGION.keys():
@@ -136,10 +144,11 @@ def bump_version_up_per_browser(*, browser, region):
 def conform_request_bool(value):
     return value.lower() == 'true'
 
-def generate_trade_request(*, customer_id, symbol, day_of_week, region, latency_amount, latency_action, error_model, error_db, error_db_service, error_request, skew_market_factor, canary, classification=None, data_source):
+def generate_trade_request(*, subscription, customer_id, symbol, day_of_week, region, latency_amount, latency_action, error_model, error_db, error_db_service, error_request, skew_market_factor, canary, classification=None, data_source):
     try:
         params={'symbol': symbol, 
-                'day_of_week': day_of_week, 
+                'day_of_week': day_of_week,
+                'subscription': subscription,
                 'customer_id': customer_id, 
                 'latency_amount': latency_amount,
                 'latency_action': latency_action,
@@ -191,6 +200,7 @@ def generate_trade_requests():
             region = next_region if next_region is not None else random.choice(list(CUSTOMERS_PER_REGION.keys()))
             symbol = next_symbol if next_symbol is not None else random.choice(SYMBOLS)
             customer_id = next_customer if next_customer is not None else random.choice(CUSTOMERS_PER_REGION[region])
+            subscription = SUBSCRIPTION_PER_USER[customer_id]
 
             if region in latency_per_action_per_region:
                 latency_amount = random.randint(latency_per_action_per_region[region]['amount']-LATENCY_SWING_MS, latency_per_action_per_region[region]['amount']+LATENCY_SWING_MS) / 1000.0
@@ -252,7 +262,7 @@ def generate_trade_requests():
 
             app.logger.info(f"trading {symbol} for {customer_id} on {DAYS_OF_WEEK[idx_of_week]} from {region} with latency {latency_amount}, error_model={error_model}, error_request={error_request}, error_db={error_db}, skew_market_factor={skew_market_factor}, canary={canary}")
 
-            executor.submit(generate_trade_request, customer_id=customer_id, symbol=symbol, day_of_week=DAYS_OF_WEEK[idx_of_week], region=region,
+            executor.submit(generate_trade_request, subscription=subscription, customer_id=customer_id, symbol=symbol, day_of_week=DAYS_OF_WEEK[idx_of_week], region=region,
                         latency_amount=latency_amount, latency_action=latency_action, 
                         error_model=error_model, 
                         error_db=error_db, error_db_service=error_db_service, error_request=error_request,
@@ -506,7 +516,7 @@ def canary_region_delete(region):
         del canary_per_region[region]
     return canary_per_region  
 
-def generate_trade_force(*, customer_id, day_of_week, region, symbol, action, shares, share_price, data_source, classification):
+def generate_trade_force(*, subscription, customer_id, day_of_week, region, symbol, action, shares, share_price, data_source, classification):
     try:
 
         headers = {}
@@ -522,6 +532,7 @@ def generate_trade_force(*, customer_id, day_of_week, region, symbol, action, sh
                                                'action': action,
                                                'region': region,
                                                'customer_id': customer_id,
+                                               'subscription': subscription,
                                                'share_price': share_price,
                                                'data_source': data_source,
                                                'classification': classification
@@ -559,6 +570,7 @@ def generate_trades(*, fixed_day_of_week=None, fixed_region = None, fixed_symbol
                 symbol = random.choice(fixed_symbol)
 
             customer_id = random.choice(CUSTOMERS_PER_REGION[region])
+            subscription = SUBSCRIPTION_PER_USER[customer_id]
                 
             action = random.choice(ACTIONS)
             if label_rand < TRAINING_PERCENT_LABELED and fixed_action is not None:
@@ -574,7 +586,7 @@ def generate_trades(*, fixed_day_of_week=None, fixed_region = None, fixed_symbol
 
             app.logger.info(f"training {symbol} for {customer_id} on {day_of_week} from {region}, classification {trade_classification}, data_source {data_source}")
 
-            executor.submit(generate_trade_force, symbol=symbol, day_of_week=day_of_week, region=region, customer_id=customer_id,
+            executor.submit(generate_trade_force, symbol=symbol, day_of_week=day_of_week, region=region, subscription=subscription, customer_id=customer_id,
                                 action=action, shares=shares, share_price=share_price, classification=trade_classification,
                                 data_source=data_source)
 

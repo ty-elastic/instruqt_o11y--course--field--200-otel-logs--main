@@ -1,2 +1,1 @@
-diff -Naru ../app.py o11y--course--field--200-otel-logs--main/init-app.py > o11y--course--field--200-otel-logs--main/init.patch
-diff -Naru o11y--course--field--200-otel-logs--main/app.py o11y--course--field--200-otel-logs--main/trade_id-app.py > o11y--course--field--200-otel-logs--main/trade_id.patch
+diff -Naru ../app.py o11y--course--field--200-otel-logs--main/_challenges/02_otlp/app.py > o11y--course--field--200-otel-logs--main/_challenges/02_otlp/app.patch

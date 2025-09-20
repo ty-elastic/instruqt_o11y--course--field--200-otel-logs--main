@@ -21,4 +21,4 @@ gcloud container clusters get-credentials $name --zone $zone --project $project
 
 #------- TOOLS
 
-source ../../k8s/tools/ksm.sh
+source ./ksm.sh

@@ -16,23 +16,33 @@ function getRandomBoolean() {
 
 function customRouter(req: any) {
   var host = "";
+  var method = ""
   if (req.query.service != null) {
+    method = "service";
     host = `http://${req.query.service}:9003`;
   }
   else {
-    if (req.query.canary === 'true')
+    if (req.query.canary === 'true') {
+      method = "canary";
       host = `http://${process.env.RECORDER_HOST_CANARY}:9003`;
+    }
     else {
-      if (process.env.RECORDER_HOST_2 == null)
+      if (process.env.RECORDER_HOST_2 == null) {
+        method = "default";
         host = `http://${process.env.RECORDER_HOST_1}:9003`;
-      else if (getRandomBoolean())
-        host = `http://${process.env.RECORDER_HOST_1}:9003`;
+      }
       else
-        host = `http://${process.env.RECORDER_HOST_2}:9003`;
+      {
+        method = "random";
+        if (getRandomBoolean())
+          host = `http://${process.env.RECORDER_HOST_1}:9003`;
+        else
+          host = `http://${process.env.RECORDER_HOST_2}:9003`;
+      }
     }
   }
 
-  logger.info(`routing request to ${host}`);
+  logger.info(`routing request to ${host}`, {method: method});
   return host;
 };
 
