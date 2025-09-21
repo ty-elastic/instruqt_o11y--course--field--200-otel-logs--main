@@ -8,24 +8,102 @@ notes:
   contents: In this challenge, we will consider the challenges of working with limited
     context while performing Root Cause Analysis of a reported issue
 tabs:
-- id: 3ayqymssmwac
+- id: jeu1estyxf1z
   title: Elasticsearch
   type: service
   hostname: kubernetes-vm
-  path: /app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:60000),time:(from:now-15m,to:now))&_a=(columns:!(),dataSource:(dataViewId:'logs-*',type:dataView),filters:!(),hideChart:!f,interval:auto,query:(language:kuery,query:''),sort:!(!('@timestamp',desc)))
+  path: /app/discover#/?_g=(filters:!(),query:(language:kuery,query:''),refreshInterval:(pause:!t,value:60000),time:(from:now-1h,to:now))&_a=(breakdownField:log.level,columns:!(),dataSource:(type:esql),filters:!(),hideChart:!f,interval:auto,query:(esql:'FROM%20logs-*%20%0A%7C%20WHERE%20service.name%20%3D%3D%20%22router%22%0A%20%20'),sort:!(!('@timestamp',desc)))
   port: 30001
-- id: tnuwgjoyomvq
-  title: VS Code
-  type: service
+- id: kr5jkc770z5f
+  title: collector Config
+  type: code
   hostname: host-1
-  path: ?folder=/workspace/workshop
-  port: 8080
+  path: /workspace/workshop/collector/_courses/o11y--course--field--200-otel-logs--main/_challenges/03-file
+- id: 4qcxxz95lkpr
+  title: router Source
+  type: code
+  hostname: host-1
+  path: /workspace/workshop/src/router
+- id: lyqrwsofywhh
+  title: Terminal
+  type: terminal
+  hostname: host-1
+  workdir: /workspace/workshop
 difficulty: ""
 timelimit: 600
+lab_config:
+  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["jeu1estyxf1z","kr5jkc770z5f","4qcxxz95lkpr"],"activeTabId":"jeu1estyxf1z","size":38}},{"leaf":{"tabs":["lyqrwsofywhh"],"activeTabId":"lyqrwsofywhh","size":60}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":32}}],"orientation":"Horizontal"}}'
 enhanced_loading: null
 ---
+As noted, there are many reasons why use of OTLP logging may be impractical. Chief among them is accommodating services which cannot be instrumented with OpenTelemetry (e.g., third-party services). These services simply write their logs to disk directly, or more commonly to stdout, which is then written to disk by the Kubernetes or Docker logging framework, for example. 
 
-Many apps write logs to disk or to stdout, and then to disk. To accomodate this, we can use the filelogreceiver that is part of the OTel Collector. Like Filebeat, it scrapes logs. It can be deployed by hand, or if on k8s, using the OTel Operator.
+To accommodate such services, we can use the [filelog receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/filelogreceiver) in the OTel Collector. In many regards, the `filelog` receiver is the OTel equivalent of Elastic's filebeat (often running as a module inside Elastic Agent).
+
+In this example, we will be working with a service which outputs logs to stdout in a custom JSON format.
+
+Now let's see what our logs look like in Elasticsearch.
+1. Open the [button label="Elasticsearch"](tab-0) tab
+2. Click `Discover` in the left-hand navigation pane
+3. Execute the following query:
+```esql
+FROM logs-* WHERE service.name == "router"
+```
+4. Open the first log record by clicking on the double arrow icon under `Actions`
+5. Click on the `Log overview` tab
+
+Note that the body of the message is JSON-formatted.
+
+# Checking the Source
+
+Now let's validate that these logs are being emitted to stdout, and written to disk:
+
+1. Open the [button label="Terminal"](tab-3) tab
+2. Execute the following to get a list of the active Kubernetes pods that comprise our trading system:
+```bash,run
+kubectl -n trading get pods
+```
+3. Find the active `router-...` pod in the list
+4. Get stdout logs from the active `router` pod:
+```bash,nocopy
+kubectl -n trading logs <router-...>
+```
+(replace ... with the pod instance id)
+
+Note that logs are written to stdout.
+
+Now let's validate that Kubernetes is picking up stdout and written to disk:
+
+1. Open the [button label="Terminal"](tab-3) tab
+2. Let's peek on the logs being written to disk by Kubernetes
+```bash,run
+cd /var/log/pods/
+ls
+```
+3. Get logs for current instant of the `router` pod
+```bash,run
+cd trading_router*
+ls
+cd router
+```
+4. Look at the logs:
+```bash,run
+cat 0.log
+```
+
+Making Sense of JSON Logs
+===
+Many custom applications log to a JSON format to provide some structure to the log line. To fully appreciate this benefit in a logging backend, however, you need to parse that JSON (embedded in the log line) and extract fields fo interest. 
+
+While you could do this with Elasticsearch using Streams (as we will see in the future challenge), with OpenTelemetry, this can also be done in the Collector using [OTTL](https://opentelemetry.io/docs/collector/transforming-telemetry/).
+
+
+4. Get stdout logs from the active `router` pod:
+```bash,nocopy
+kubectl -n trading logs <router-...>
+```
+/var/log/pods/
+
+
 
 Let's first look at a service that is writing logs to disk.
 kubectl get pods
@@ -140,3 +218,8 @@ kubectl rollout restart deployment -n k8sotel
 service.name : "router"
 ````
 4. Look at `body.text` field (it is no longer json encoding, but rather displays what was formally in `message`)
+
+
+ADD structured logging
+- fix metadata
+- fix struc logging

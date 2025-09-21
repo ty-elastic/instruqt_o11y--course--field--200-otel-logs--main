@@ -32,12 +32,12 @@ tabs:
 difficulty: ""
 timelimit: 600
 lab_config:
-  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["kr5jkc770z5f","jeu1estyxf1z","4qcxxz95lkpr"],"activeTabId":"jeu1estyxf1z","size":38}},{"leaf":{"tabs":["lyqrwsofywhh"],"activeTabId":"lyqrwsofywhh","size":60}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":32}}],"orientation":"Horizontal"}}'
+  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["jeu1estyxf1z","kr5jkc770z5f","4qcxxz95lkpr"],"activeTabId":"jeu1estyxf1z","size":38}},{"leaf":{"tabs":["lyqrwsofywhh"],"activeTabId":"lyqrwsofywhh","size":60}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":32}}],"orientation":"Horizontal"}}'
 enhanced_loading: null
 ---
 In this model, we will be sending logs directly from a service to an [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/) over the network using the [OTLP](https://opentelemetry.io/docs/specs/otel/protocol/) protocol. This is the default mechanism most OpenTelemetry SDKs use for exporting logs from a service.
 
-![method-1](../assets/method1.svg)
+![method-1](../assets/method1.mmd.png)
 
 Looking at the diagram:
 1) a service leverages an existing logging framework (e.g., [logback](https://logback.qos.ch) in Java) to generate log statements
@@ -78,7 +78,7 @@ Let's first validate we have logs coming in from our `recorder-java` service:
 1. Open the [button label="Elasticsearch"](tab-0) tab
 2. Execute the following query:
 ```esql
-FROM logs-* 
+FROM logs-*
 | WHERE service.name == "recorder-java"
 ```
 3. Open the first log record by clicking on the double arrow icon under `Actions`
@@ -102,7 +102,7 @@ Let's further validate that no logs are being written to stdout (which would be 
 kubectl -n trading get pods
 ```
 3. Find the active `recorder-java-...` pod in the list
-3. Get stdout logs from the active `recorder-java` pod:
+4. Get stdout logs from the active `recorder-java` pod:
 ```bash,nocopy
 kubectl -n trading logs <recorder-java-...>
 ```
@@ -127,7 +127,7 @@ One major advantage of using OTLP for logging is the ability to very easily appe
 6. Scroll down to `Trace sample`
 7. Click on the `Logs` tab
 
-These are all the logs associated with this specific transaction. 
+These are all the logs associated with this specific transaction.
 
 Attributes
 ===

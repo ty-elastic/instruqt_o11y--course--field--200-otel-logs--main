@@ -1,2 +1,0 @@
-diff -Naru ../postgresql.yaml o11y--course--field--200-otel-logs--main/postgresql.yaml > o11y--course--field--200-otel-logs--main/postgresql.patch
-diff -Naru ../recorder-java.yaml o11y--course--field--200-otel-logs--main/recorder-java.yaml > o11y--course--field--200-otel-logs--main/recorder-java.patch
