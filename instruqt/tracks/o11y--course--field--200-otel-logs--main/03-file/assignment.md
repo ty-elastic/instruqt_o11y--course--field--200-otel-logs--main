@@ -36,7 +36,7 @@ tabs:
 difficulty: ""
 timelimit: 600
 lab_config:
-  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["jeu1estyxf1z","kr5jkc770z5f","4qcxxz95lkpr"],"activeTabId":"jeu1estyxf1z","size":38}},{"leaf":{"tabs":["lyqrwsofywhh"],"activeTabId":"lyqrwsofywhh","size":60}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":32}}],"orientation":"Horizontal"}}'
+  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["t3tg2slqodjt","fyb01yrpxc5q","amxs2wbeu14y","im6htfxz8yft"],"activeTabId":"t3tg2slqodjt","size":38}},{"leaf":{"tabs":["gquoynyprmua"],"activeTabId":"gquoynyprmua","size":60}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":32}}],"orientation":"Horizontal"}}'
 enhanced_loading: null
 ---
 As noted, there are many reasons why use of OTLP logging may be impractical. Chief among them is accommodating services which cannot be instrumented with OpenTelemetry (e.g., third-party services). These services simply write their logs to disk directly, or more commonly to stdout, which is then written to disk by the Kubernetes or Docker logging framework, for example.

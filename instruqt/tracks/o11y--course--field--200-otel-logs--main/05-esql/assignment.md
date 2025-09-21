@@ -2,7 +2,7 @@
 slug: esql
 id: dsowylbzjzkr
 type: challenge
-title: Life before attributes
+title: Using ES|QL to Parse OTel logs
 notes:
 - type: text
   contents: In this challenge, we will consider the challenges of working with limited
@@ -12,7 +12,7 @@ tabs:
   title: Elasticsearch
   type: service
   hostname: kubernetes-vm
-  path: /app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:60000),time:(from:now-15m,to:now))&_a=(columns:!(),dataSource:(dataViewId:'logs-*',type:dataView),filters:!(),hideChart:!f,interval:auto,query:(language:kuery,query:''),sort:!(!('@timestamp',desc)))
+  path: /app/discover#/?_g=(filters:!(),query:(language:kuery,query:''),refreshInterval:(pause:!t,value:60000),time:(from:now-1h,to:now))&_a=(breakdownField:log.level,columns:!(),dataSource:(type:esql),filters:!(),hideChart:!f,interval:auto,query:(esql:'FROM%20logs-proxy.otel-default'),sort:!(!('@timestamp',desc)))
   port: 30001
 difficulty: ""
 timelimit: 600

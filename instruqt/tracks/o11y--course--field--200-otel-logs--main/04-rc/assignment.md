@@ -32,7 +32,7 @@ tabs:
 difficulty: ""
 timelimit: 600
 lab_config:
-  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["jeu1estyxf1z","kr5jkc770z5f","4qcxxz95lkpr"],"activeTabId":"jeu1estyxf1z","size":38}},{"leaf":{"tabs":["lyqrwsofywhh"],"activeTabId":"lyqrwsofywhh","size":60}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":32}}],"orientation":"Horizontal"}}'
+  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["vgilav3kazur","ubyi9wpnvjzg","6ebux7uxhpyo"],"activeTabId":"vgilav3kazur","size":38}},{"leaf":{"tabs":["5luf3xjq6izp"],"activeTabId":"5luf3xjq6izp","size":60}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":32}}],"orientation":"Horizontal"}}'
 enhanced_loading: null
 ---
 
@@ -90,12 +90,12 @@ Now we need to modify our `postgresql.yaml` to include our directives.
               parse_from: attributes.severity_field
               on_error: send_quiet
               mapping:
-                warn: 
+                warn:
                   - WARNING
                   - NOTICE
                 error:
                   - ERROR
-                info: 
+                info:
                   - LOG
                   - INFO
                   - STATEMENT

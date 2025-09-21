@@ -1,12 +1,13 @@
 ---
 slug: wrapup
+id: zzsemhldkfzm
 type: challenge
 title: Wrapping Up
 notes:
 - type: text
   contents: In this challenge, we summarize our work in this lab.
 tabs:
-- id: v4zr50caye11
+- id: qvfwx1begtas
   title: Elasticsearch
   type: service
   hostname: kubernetes-vm
