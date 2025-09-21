@@ -1,0 +1,10 @@
+source /opt/workshops/elastic-retry.sh
+export $(curl http://kubernetes-vm:9000/env | xargs)
+
+cd /workspace/workshop
+cp -f src/recorder-java/_courses/o11y--course--field--200-otel-logs--main/_challenges/02-otlp/TradeRecorder.java src/recorder-java/src/main/java/com/example/recorder/TradeRecorder.java
+./builddeploy.sh -s recorder-java
+
+cd /workspace/workshop
+cp -f src/trader/_courses/o11y--course--field--200-otel-logs--main/_challenges/02-otlp/app.py src/trader/app.py
+./builddeploy.sh -s trader

@@ -16,19 +16,19 @@ enhanced_loading: null
 ---
 The advent of OpenTelemetry has forever changed how we capture observability signals. While OTel initially focused on delivering traces and metrics, support for collection of logs is now stable and gaining adoption, particularly in Kubernetes environments.
 
-In this lab, we will explore several models for using OpenTelemetry to collect log signals:
+In this lab, we will explore several models for using OpenTelemetry to collect log signals.
 
 1) Service to Collector via OTLP
 
 In this model, we forgo log files entirely, routing log messages directly via the network (OTLP) from services to a Collector.
 ![service-map.png](../assets/method1.svg)
 
-2) Service to Collector via log files formatted with OTel Semantic Conventions (`otlpjson`)
+2) Service to Collector via log files captured with the filelogreceiver
 
 In this model, we output logs from services to a log file written with OTel Semantic Conventions (`otlpjson`), which we then collect via a Collector.
 ![service-map.png](../assets/method2.svg)
 
-3) Service to Collector via arbitrarily formatted log files
+3) Service to Collector via log files captured with the receivercreator
 
 In this model, we output logs from select services to a log file written in an arbitrary format, which we then collect via a Collector.
 ![service-map.png](../assets/method3.svg)
@@ -39,6 +39,8 @@ Getting Our Bearings
 ===
 
 In this lab, we will be working with an exemplary stock trading system, comprised of several services and their dependencies, all instrumented using [OpenTelemetry](https://opentelemetry.io).
+
+# Elasticsearch
 
 We will be working with a live Elasticsearch instance, displayed in the browser tab to the left. We are currently looking at Elastic's dynamically generated Service Map. It shows all of the services that comprise our system, and how they interact with one another.
 
@@ -60,3 +62,7 @@ When you are ready, click the `Next` button to continue.
 This workshop will heavily leverage ES|QL, Elastic's query-time language, to analyze our nginx reverse proxy logs. You can enter your queries in the pane at the top of the Elasticsearch tab. You can change the time window of your search using the Time Filter. To execute a search, click the Play/Refresh icon.
 
 ![1_discover.png](../assets/1_discover.png)
+
+# VS Code
+
+This work

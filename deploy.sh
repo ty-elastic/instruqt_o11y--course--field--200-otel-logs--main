@@ -33,8 +33,6 @@ if [ "$otel" = "true" ]; then
     # ---------- COLLECTOR
 
     cd collector
-    rm -rf values.yaml
-    curl -o values.yaml https://raw.githubusercontent.com/elastic/elastic-agent/refs/tags/v9.0.3/deploy/helm/edot-collector/kube-stack/values.yaml
     # if [ -d "_courses/$variant" ]; then
     #     echo $variant;
     #     patch < _courses/$variant/init.patch
@@ -45,24 +43,14 @@ if [ "$otel" = "true" ]; then
     --values 'https://raw.githubusercontent.com/elastic/elastic-agent/refs/tags/v9.1.3/deploy/helm/edot-collector/kube-stack/values.yaml' \
     --version '0.9.1'
     
-    kubectl -n opentelemetry-operator-system rollout restart deployment
-    kubectl -n opentelemetry-operator-system rollout restart daemonset
+    # kubectl -n opentelemetry-operator-system rollout restart deployment
+    # kubectl -n opentelemetry-operator-system rollout restart daemonset
     cd ..
-
-    # ---------- OPERATOR
-
-    # cd operator
-    # if [ -d "_courses/$variant" ]; then
-    #     echo "applying variant"
-    #     envsubst < _courses/$variant/init.yaml | kubectl -n opentelemetry-operator-system apply -f -
-    # fi
-    # cd ..
 
     sleep 30
 fi
 
-# envsubst < k8s/yaml/_namespace.yaml | kubectl apply -f -
-# kubectl label ns $namespace namespace-node-affinity=enabled
+envsubst < k8s/yaml/_namespace.yaml | kubectl apply -f -
 
 if [ "$service" != "none" ]; then
     for file in k8s/yaml/*.yaml; do
