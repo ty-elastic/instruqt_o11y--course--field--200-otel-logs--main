@@ -2,7 +2,7 @@
 slug: file
 id: co1ozkck8zux
 type: challenge
-title: Life before attributes
+title: OpenTelemetry Logging with filelog receiver
 notes:
 - type: text
   contents: In this challenge, we will consider the challenges of working with limited
@@ -14,7 +14,7 @@ tabs:
   hostname: kubernetes-vm
   path: /app/discover#/?_g=(filters:!(),query:(language:kuery,query:''),refreshInterval:(pause:!t,value:60000),time:(from:now-1h,to:now))&_a=(breakdownField:log.level,columns:!(),dataSource:(type:esql),filters:!(),hideChart:!f,interval:auto,query:(esql:'FROM%20logs-*%20%0A%7C%20WHERE%20service.name%20%3D%3D%20%22router%22%0A%20%20'),sort:!(!('@timestamp',desc)))
   port: 30001
-- id: 7gj58ylskiig
+- id: fyb01yrpxc5q
   title: OTTL Playground
   type: website
   url: https://ottl.run/
@@ -151,13 +151,13 @@ Those initial set of log statements:
 1. checks if the message body is JSON formatted
 2. if so, parses the body as json, flattens the key names (to prevent nesting), and merges the results to `attributes`
 
-Click on the `Run >` button. In the `Result` pane, you can see the diff of what this OTTL would do, and it kind of matches what we expect. 
+Click on the `Run >` button. In the `Result` pane, you can see the diff of what this OTTL would do, and it kind of matches what we expect.
 
 It is far from ideal:
 * it does not conform to OTel semantic conventions (e.g., `_meta.logLevelName`, `_meta.date`)
 * the message body is now stored as an attribute with key `0`
 
-Let's clean that up. 
+Let's clean that up.
 1. Paste the following into the `Configuration` pane:
 ```yaml
             log_statements:
@@ -253,7 +253,7 @@ Let's do structured logging
 ```ts
 logger.info(`routing request to ${host}`);
 ```
-4. Modify it to 
+4. Modify it to
 ```ts
 logger.info(`routing request to ${host}`, {method: method});
 ```

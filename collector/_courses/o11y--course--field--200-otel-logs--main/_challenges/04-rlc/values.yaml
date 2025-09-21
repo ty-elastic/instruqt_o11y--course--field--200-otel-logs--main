@@ -203,6 +203,26 @@ collectors:
           tls:
             insecure: true
       processors:
+        transform/parse_json_body:
+            error_mode: ignore
+            log_statements:
+              - context: log
+                conditions:
+                  - body != nil and Substring(body, 0, 2) == "{\""
+                statements:
+                  - set(cache, ParseJSON(body))
+                  - flatten(cache, "")
+                  - merge_maps(attributes, cache, "upsert")
+
+                  - set(time, Time(attributes["_meta.date"], "%Y-%m-%dT%H:%M:%SZ"))
+                  - set(severity_text, attributes["_meta.logLevelName"])
+                  - set(severity_number, attributes["_meta.logLevelId"])
+                  - delete_matching_keys(attributes, "_meta\\..*")
+
+                  - set(body, attributes["0"])
+                  - delete_key(attributes, "0")
+
+                  - replace_all_patterns(attributes, "key", "\\d+\\.", "")
         resource/logs_routing:
           attributes:
             - key: data_stream.dataset
@@ -458,6 +478,8 @@ collectors:
             receivers:
               - receiver_creator/logs
             processors:
+              - resource/logs_routing
+              - transform/parse_json_body
               - batch
               - k8sattributes
               - resourcedetection/system

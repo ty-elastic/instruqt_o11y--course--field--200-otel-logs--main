@@ -457,6 +457,7 @@ collectors:
             receivers:
               - filelog
             processors:
+              - resource/logs_routing
               - transform/parse_json_body
               - batch
               - k8sattributes

@@ -2,26 +2,41 @@
 slug: rlc
 id: cnxobswy9uyl
 type: challenge
-title: Life before attributes
+title: OpenTelemetry Logging with receiver creator
 notes:
 - type: text
   contents: In this challenge, we will consider the challenges of working with limited
     context while performing Root Cause Analysis of a reported issue
 tabs:
-- id: t16bl1281fhu
+- id: t3tg2slqodjt
   title: Elasticsearch
   type: service
   hostname: kubernetes-vm
-  path: /app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:60000),time:(from:now-15m,to:now))&_a=(columns:!(),dataSource:(dataViewId:'logs-*',type:dataView),filters:!(),hideChart:!f,interval:auto,query:(language:kuery,query:''),sort:!(!('@timestamp',desc)))
+  path: /app/discover#/?_g=(filters:!(),query:(language:kuery,query:''),refreshInterval:(pause:!t,value:60000),time:(from:now-1h,to:now))&_a=(breakdownField:log.level,columns:!(),dataSource:(type:esql),filters:!(),hideChart:!f,interval:auto,query:(esql:'FROM%20logs-*%20%0A%7C%20WHERE%20service.name%20%3D%3D%20%22router%22%0A%20%20'),sort:!(!('@timestamp',desc)))
   port: 30001
-- id: cdodfjwvcckf
-  title: VS Code
-  type: service
+- id: fyb01yrpxc5q
+  title: OTTL Playground
+  type: website
+  url: https://ottl.run/
+- id: amxs2wbeu14y
+  title: collector Config
+  type: code
   hostname: host-1
-  path: ?folder=/workspace/workshop
-  port: 8080
+  path: /workspace/workshop/collector/_courses/o11y--course--field--200-otel-logs--main/_challenges/04-rlc/values.patch
+- id: im6htfxz8yft
+  title: postgresql Config
+  type: code
+  hostname: host-1
+  path: /workspace/workshop/k8s/yaml/postgresql.yaml
+- id: gquoynyprmua
+  title: Terminal
+  type: terminal
+  hostname: host-1
+  workdir: /workspace/workshop
 difficulty: ""
 timelimit: 600
+lab_config:
+  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["jeu1estyxf1z","kr5jkc770z5f","4qcxxz95lkpr"],"activeTabId":"jeu1estyxf1z","size":38}},{"leaf":{"tabs":["lyqrwsofywhh"],"activeTabId":"lyqrwsofywhh","size":60}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":32}}],"orientation":"Horizontal"}}'
 enhanced_loading: null
 ---
 
@@ -31,9 +46,13 @@ Receiver Log Creator
 
 look at postgres logs (no parse)
 
+
+
 talk about SQL commentor. trace_id.
 
 Do it with postgres logs.
+
+
 
 
 Ideally, we want timestamps and log level as first class citizens.
@@ -107,3 +126,14 @@ Now let's look at our results:
 3. Click on the refresh icon at the right of the time picker
 4. Note that we now have a log level!
 5. Open a log message... note that the @timestamp is set correctly, and we've stripped the header from body.text
+
+Now let's redeploy the OTel Operator with our updated config:
+
+1. Open the [button label="Terminal"](tab-3) tab
+2. Execute the following:
+```bash,run
+helm upgrade --install opentelemetry-kube-stack open-telemetry/opentelemetry-kube-stack --force \
+  --namespace opentelemetry-operator-system \
+  --values 'collector/values.yaml' \
+  --version '0.9.1'
+```
