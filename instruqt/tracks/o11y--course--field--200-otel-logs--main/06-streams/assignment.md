@@ -27,6 +27,8 @@ enhanced_loading: null
 
 So far, we've been using ES|QL to parse our proxy logs at query-time. While incredibly powerful for quick analysis, we can do even more with our logs if we parse them at ingest-time.
 
+While you could use our OOTB integration to parse nginx logs, we've customized our nginx logs with a duration. Streams is really good at working with this.
+
 # Parsing with Streams
 
 We will be working with Elastic [Streams](https://www.elastic.co/docs/solutions/observability/logs/streams/streams) which makes it easy to setup log parsing pipelines.
@@ -45,13 +47,12 @@ We can parse our nginx log messages at ingest-time using the Elastic [Grok](http
   ```
   body.text
   ```
-4. Click `Generate pattern`. Elasticsearch will analyze your log lines and try to determine a suitable grok pattern.
+4. Click `Generate pattern`. Elasticsearch will analyze your log lines and determine a suitable grok pattern.
 5. To ensure a consistent lab experience, copy the following grok expression and paste it into the `Grok patterns` field (_do not_ click the `Accept` button next to the generated pattern)
 ```
-%{IPV4:client.ip} - %{NOTSPACE:client.user} \[%{HTTPDATE:timestamp}\] "%{WORD:http.request.method} %{URIPATH:http.request.url.path} HTTP/%{NUMBER:http.version}" %{NUMBER:http.response.status_code:int} %{NUMBER:http.response.body.bytes:int} "%{DATA:http.request.referrer}" "%{GREEDYDATA:user_agent.original}"
+%{IPV4:client.ip} - %{NOTSPACE:client.user} \[%{HTTPDATE:timestamp}\] "%{WORD:http.request.method} %{URIPATH:http.request.url.path} HTTP/%{NUMBER:http.version}" %{NUMBER:http.response.status_code:int} %{NUMBER:http.response.body.bytes:int} %{NUMBER:http.response.duration:float} "%{DATA:http.request.referrer}" "%{GREEDYDATA:user_agent.original}"
 ```
 6. Wait until the sample `body.text` on the right shows highlighting, then click `Add processor`
-
 
 ## Parsing the timestamp
 
@@ -62,7 +63,6 @@ The nginx log line includes a timestamp; let's use that as our record timestamp.
 3. Set `Field` to `timestamp`
 4. Elastic should auto-recognize the format: `dd/MMM/yyyy:HH:mm:ss XX`
 5. Click `Add processor`
-
 
 Now save the Processing by clicking `Save changes` in the bottom-right.
 
@@ -76,23 +76,3 @@ FROM logs-proxy.otel-default
 | WHERE http.response.status_code IS NOT NULL
 | KEEP @timestamp, client.ip, http.request.method, http.request.url.path, http.response.status_code, user_agent.original
 ```
-
-> [!NOTE]
-> If you get back `1,000 results` but the resulting columns are empty, remove the `Selected fields` (by clicking the `X` next to each), and then add each `Available field` (by clicking the `+` next to each).
-
-Let's redraw our status code graph using our newly parsed field:
-
-Execute the following query:
-```esql
-FROM logs-proxy.otel-default
-| WHERE http.response.status_code IS NOT NULL
-| STATS COUNT() BY TO_STRING(http.response.status_code), minute = BUCKET(@timestamp, "1 min")
-```
-
-Note that this graph, unlike the one we drew before, currently shows only a few minutes of data. That is because it relies upon the fields we parsed in the Processing we just setup. Prior to that time, those fields didn't exist. Change the time field to `Last 5 Minutes` to zoom in on the newly parsed data.
-
--------------
-
-FROM logs-postgresql.otel-default
-| WHERE client.geo.country_iso_code IS NOT NULL
-| STATS users = COUNT() BY client.geo.country_iso_code, user_agent.os.name

@@ -3,3 +3,8 @@ export $(curl http://kubernetes-vm:9000/env | xargs)
 
 cd /workspace/workshop
 cp -f collector/_courses/o11y--course--field--200-otel-logs--main/_challenges/04-rlc/values.yaml collector/values.yaml
+
+helm upgrade --install opentelemetry-kube-stack open-telemetry/opentelemetry-kube-stack \
+    --namespace opentelemetry-operator-system \
+    --values 'collector/values.yaml' \
+    --version '0.9.1'
