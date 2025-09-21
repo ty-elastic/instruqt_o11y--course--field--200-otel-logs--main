@@ -44,7 +44,7 @@ Let's have a look at our postgresql logs.
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* 
+FROM logs-*
 | WHERE service.name == "postgresql"
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`

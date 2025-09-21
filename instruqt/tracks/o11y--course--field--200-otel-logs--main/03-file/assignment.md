@@ -53,7 +53,7 @@ Now let's see what our logs look like in Elasticsearch.
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* 
+FROM logs-*
 | WHERE service.name == "router"
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
@@ -247,7 +247,7 @@ Once the daemonset collectors have restarted, let's check the logs coming into E
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* 
+FROM logs-*
 | WHERE service.name == "router"
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
@@ -281,7 +281,7 @@ Now let's see how that looks in Elasticsearch:
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* 
+FROM logs-*
 | WHERE service.name == "router"
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
@@ -371,7 +371,7 @@ Now let's see how that looks in Elasticsearch:
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* 
+FROM logs-*
 | WHERE service.name == "router"
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`

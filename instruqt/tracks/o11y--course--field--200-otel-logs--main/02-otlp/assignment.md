@@ -164,7 +164,7 @@ Now let's see what our logs look like in Elasticsearch.
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* 
+FROM logs-*
 | WHERE service.name == "recorder-java" and message LIKE "*trade committed*"
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`

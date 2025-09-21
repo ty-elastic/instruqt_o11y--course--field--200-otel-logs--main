@@ -480,6 +480,7 @@ collectors:
             receivers:
               - otlp
             processors:
+              - resource/logs_routing
               - batch
               - resource/hostname
             exporters:
