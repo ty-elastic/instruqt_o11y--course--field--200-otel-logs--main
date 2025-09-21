@@ -164,7 +164,8 @@ Now let's see what our logs look like in Elasticsearch.
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* WHERE service.name == "recorder-java" and message LIKE "trade committed"
+FROM logs-* 
+| WHERE service.name == "recorder-java" and message LIKE "*trade committed*"
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
 5. Click on the `Attributes` tab
@@ -190,6 +191,7 @@ Attributes via Baggage
 
 Note that the log record has other custom attributes like `attributes.com.example.customer_id`. We didn't add that in our logging statement in `recorder-java`. How did it get there?
 
+1. Open the [button label="Elasticsearch"](tab-0) tab
 1. Click `Applications` > `Service Inventory` in the left-hand navigation pane
 2. Click on the `Service Map` tab
 3. Click on the `trader` service
@@ -203,7 +205,7 @@ Note that `attributes.com.example.customer_id` exists in this span too!
 
 1. Close the `Transaction details` flyout
 2. Click on the `Logs` tab under `Trace sample`
-3. Click on the log line that looks like `traded <stock.symbol> on day <day> for <customer.id>`
+3. Click on the log line that looks like `trade committed for <customer.id>`
 
 Note that `attributes.com.example.customer_id` exists here too!
 
@@ -213,7 +215,7 @@ Imagine how easy this will make the life of your SREs and analysts to easily sea
 
 Let's look at the code which initially stuck `customer_id` into OTel baggage:
 
-1. Open the [button label="recorder-java Source"](tab-1) tab
+1. Open the [button label="Trader Source"](tab-2) tab
 2. Navigate to `app.py`
 3. Look for calls to `set_attribute_and_baggage()` inside the `decode_common_args()` function
 
@@ -242,6 +244,7 @@ Now let's recompile and redeploy our `trader` service.
 
 And now let's check our work in Elasticsearch:
 
+1. Open the [button label="Elasticsearch"](tab-0) tab
 1. Click `Applications` > `Service Inventory` in the left-hand navigation pane
 2. Click on the `Service Map` tab
 3. Click on the `trader` service

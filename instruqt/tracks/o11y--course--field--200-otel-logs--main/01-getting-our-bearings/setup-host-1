@@ -44,7 +44,7 @@ cd /workspace/workshop
 
 # ------------- WAIT
 
-retry_command_lin curl --silent --fail --output /dev/null --header "Authorization: Basic $ELASTICSEARCH_AUTH_BASE64" "$ELASTICSEARCH_URL/_cat/indices/logs-proxy.otel-default?allow_no_indices=false"
+#retry_command_lin curl --silent --fail --output /dev/null --header "Authorization: Basic $ELASTICSEARCH_AUTH_BASE64" "$ELASTICSEARCH_URL/_cat/indices/logs-proxy.otel-default?allow_no_indices=false"
 
 curl -X POST "$ELASTICSEARCH_URL/logs-proxy.otel-default/_rollover" \
     --header 'Content-Type: application/json' \

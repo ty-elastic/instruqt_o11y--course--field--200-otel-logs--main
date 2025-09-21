@@ -18,6 +18,7 @@ tabs:
   title: OTTL Playground
   type: website
   url: https://ottl.run/
+  new_window: true
 - id: amxs2wbeu14y
   title: collector Config
   type: code
@@ -52,7 +53,8 @@ Now let's see what our logs look like in Elasticsearch.
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* WHERE service.name == "router"
+FROM logs-* 
+| WHERE service.name == "router"
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
 5. Click on the `Log overview` tab
@@ -90,6 +92,7 @@ ls
 cd trading_router*
 ls
 cd router
+ls
 ```
 4. Look at the logs:
 ```bash,run
@@ -191,9 +194,16 @@ This looks great. Let's put it into production!
 # Modifying values.yaml
 
 1. Open the [button label="collector Config"](tab-2) tab
-2. Search for the comment `# WORKSHOP CONTENT GOES HERE`
+2. Find the following lines under `collectors/daemon/config/processors`:
+```yaml,nocopy
+        transform/parse_json_body:
+            error_mode: ignore
+            # WORKSHOP CONTENT GOES HERE
+```
 3. Replace it with the OTTL we developed above:
 ```yaml
+        transform/parse_json_body:
+            error_mode: ignore
             log_statements:
               - context: log
                 conditions:
@@ -237,7 +247,8 @@ Once the daemonset collectors have restarted, let's check the logs coming into E
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* WHERE service.name == "router"
+FROM logs-* 
+| WHERE service.name == "router"
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
 5. Click on the `Log overview` tab
@@ -247,7 +258,7 @@ Note the parsed JSON logs.
 Let's do structured logging
 ===
 
-1. Open the [button label="router Source"](tab-2) tab
+1. Open the [button label="router Source"](tab-3) tab
 2. Navigate to `app.ts`
 3. Find the line in the function `customRouter()`
 ```ts
@@ -270,15 +281,45 @@ Now let's see how that looks in Elasticsearch:
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* WHERE service.name == "router"
+FROM logs-* 
+| WHERE service.name == "router"
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
-5. Click on the `Log overview` tab
+5. Click on the `Attributes` tab
 
 ugh, `1.method` is ugly. Let's fix it!
 
 1. Open the [button label="OTTL Playground"](tab-1) tab
-2. Pase into the `Configuration` pane the following starter configuration:
+2. Paste into the `OTLP Payload` pane an example of our JSON-ified `router` logs:
+```json
+{
+  "resourceLogs": [
+    {
+      "resource": {},
+      "scopeLogs": [
+        {
+          "scope": {},
+          "logRecords": [
+            {
+              "timeUnixNano": "1544712660300000000",
+              "observedTimeUnixNano": "1544712660300000000",
+              "severityNumber": 10,
+              "severityText": "Information",
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "eee19b7ec3c1b174",
+              "body": {
+                "stringValue": "{\"0\": \"routing request to http://recorder-java:9003\",  \"1.method\": \"random\",  \"_meta\": {    \"runtime\": \"Nodejs\",    \"runtimeVersion\": \"v20.19.5\",    \"hostname\": \"router-689cd9bd99-khtfx\",    \"name\": \"router\",    \"parentNames\": \"[undefined]\",    \"date\": \"2025-09-20T11:59:59.741Z\",    \"logLevelId\": 3,    \"logLevelName\": \"INFO\",    \"path\": {      \"fullFilePath\": \"/home/node/app/app.ts:35:10\",      \"fileName\": \"app.ts\",      \"fileNameWithLine\": \"app.ts:35\",      \"fileColumn\": \"10\",      \"fileLine\": \"35\",      \"filePath\": \"/app.ts\",      \"filePathWithLine\": \"/app.ts:35\",      \"method\": \"customRouter\"    }  }}"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+3. Press Run. Note the `1.method` attribute
+4. Paste into the `Configuration` pane the following starter configuration:
 ```yaml
             log_statements:
               - context: log
@@ -299,6 +340,9 @@ ugh, `1.method` is ugly. Let's fix it!
 
                   - replace_all_patterns(attributes, "key", "\\d+\\.", "")
 ```
+5. Press Run
+
+Much better.
 
 Note the addition of `replace_all_patterns(attributes, "key", "\\d+\\.", "")` which will remove the numerical prefix from attributes.
 
@@ -327,7 +371,8 @@ Now let's see how that looks in Elasticsearch:
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* WHERE service.name == "router"
+FROM logs-* 
+| WHERE service.name == "router"
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
 5. Click on the `Log overview` tab

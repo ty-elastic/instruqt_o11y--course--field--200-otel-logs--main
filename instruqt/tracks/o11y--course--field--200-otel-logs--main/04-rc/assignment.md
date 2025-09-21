@@ -18,7 +18,7 @@ tabs:
   title: Collector Config
   type: code
   hostname: host-1
-  path: /workspace/workshop/collector/_courses/o11y--course--field--200-otel-logs--main/_challenges/04-rlc/values.patch
+  path: /workspace/workshop/collector/_courses/o11y--course--field--200-otel-logs--main/_challenges/04-rc/values.patch
 - id: 6ebux7uxhpyo
   title: postgresql Config
   type: code
@@ -44,7 +44,8 @@ Let's have a look at our postgresql logs.
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* WHERE service.name == "postgresql"
+FROM logs-* 
+| WHERE service.name == "postgresql"
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
 5. Click on the `Log overview` tab
