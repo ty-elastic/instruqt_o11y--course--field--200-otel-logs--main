@@ -33,18 +33,10 @@ if [ "$otel" = "true" ]; then
     # ---------- COLLECTOR
 
     cd collector
-    # if [ -d "_courses/$variant" ]; then
-    #     echo $variant;
-    #     patch < _courses/$variant/init.patch
-    #     envsubst < values.yaml > values.yaml.tmp && mv values.yaml.tmp values.yaml
-    # fi
     helm upgrade --install opentelemetry-kube-stack open-telemetry/opentelemetry-kube-stack \
     --namespace opentelemetry-operator-system \
-    --values 'https://raw.githubusercontent.com/elastic/elastic-agent/refs/tags/v9.1.3/deploy/helm/edot-collector/kube-stack/values.yaml' \
+    --values 'values.yaml' \
     --version '0.9.1'
-    
-    # kubectl -n opentelemetry-operator-system rollout restart deployment
-    # kubectl -n opentelemetry-operator-system rollout restart daemonset
     cd ..
 
     sleep 30
