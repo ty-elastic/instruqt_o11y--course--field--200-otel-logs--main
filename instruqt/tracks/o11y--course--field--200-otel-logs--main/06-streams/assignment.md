@@ -91,3 +91,8 @@ FROM logs-proxy.otel-default
 
 Note that this graph, unlike the one we drew before, currently shows only a few minutes of data. That is because it relies upon the fields we parsed in the Processing we just setup. Prior to that time, those fields didn't exist. Change the time field to `Last 5 Minutes` to zoom in on the newly parsed data.
 
+-------------
+
+FROM logs-postgresql.otel-default
+| WHERE client.geo.country_iso_code IS NOT NULL
+| STATS users = COUNT() BY client.geo.country_iso_code, user_agent.os.name

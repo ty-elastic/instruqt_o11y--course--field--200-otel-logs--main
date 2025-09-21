@@ -21,7 +21,14 @@ spec:
         app: trading
         service: proxy
       annotations:
-        io.opentelemetry.discovery.logs/enabled: "false"
+        io.opentelemetry.discovery.logs/enabled: "true"
+        io.opentelemetry.discovery.logs/config: |
+          operators:
+          - type: container
+          - type: add
+            field: attributes["data_stream.dataset"]
+            value: postgresql
+            on_error: send_quiet
     spec:
       containers:
         - image: $REPO/proxy:$COURSE

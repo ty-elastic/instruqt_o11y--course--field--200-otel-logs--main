@@ -322,8 +322,8 @@ collectors:
           watch_observers: [k8s_observer]
           discovery:
             enabled: true
-            # default_annotations:
-            #   io.opentelemetry.discovery.logs/enabled: "true"
+            default_annotations:
+              io.opentelemetry.discovery.logs/enabled: "true"
           receivers: {}
         # [File Log Receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/filelogreceiver)
         # filelog:

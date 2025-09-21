@@ -3,12 +3,11 @@ export $(curl http://kubernetes-vm:9000/env | xargs)
 
 echo "Enable Streams"
 enable_streams() {
-    local http_status=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$KIBANA_URL/internal/kibana/settings" \
+    local http_status=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$KIBANA_URL/api/streams/_enable" \
     --header 'Content-Type: application/json' \
     --header "kbn-xsrf: true" \
     --header "Authorization: Basic $ELASTICSEARCH_AUTH_BASE64" \
-    --header 'x-elastic-internal-origin: Kibana' \
-    -d '{"changes":{"observability:enableStreamsUI":true}}')
+    --header 'x-elastic-internal-origin: Kibana')
 
     if echo $http_status | grep -q '^2'; then
         echo "Enabled Streams: $http_status"
