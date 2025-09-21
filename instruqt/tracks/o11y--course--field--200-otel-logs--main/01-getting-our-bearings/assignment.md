@@ -21,17 +21,17 @@ In this lab, we will explore several models for using OpenTelemetry to collect l
 1) Service to Collector via OTLP
 
 In this model, we forgo log files entirely, routing log messages directly via the network (OTLP) from services to a Collector.
-![service-map.png](../assets/method1.svg)
+![service-map.png](../assets/method1.mmd.png)
 
 2) Service to Collector via log files captured with the filelogreceiver
 
 In this model, we output logs from services to a log file written with OTel Semantic Conventions (`otlpjson`), which we then collect via a Collector.
-![service-map.png](../assets/method2.svg)
+![service-map.png](../assets/method2.mmd.png)
 
 3) Service to Collector via log files captured with the receivercreator
 
 In this model, we output logs from select services to a log file written in an arbitrary format, which we then collect via a Collector.
-![service-map.png](../assets/method3.svg)
+![service-map.png](../assets/method2.mmd.png)
 
 Additionally, for each model considered, we discuss how to add attributes to log messages and how to parse logs (both at the edge and in Elastic).
 

@@ -8,23 +8,23 @@ notes:
   contents: In this challenge, we will consider the challenges of working with limited
     context while performing Root Cause Analysis of a reported issue
 tabs:
-- id: jeu1estyxf1z
+- id: t3tg2slqodjt
   title: Elasticsearch
   type: service
   hostname: kubernetes-vm
   path: /app/discover#/?_g=(filters:!(),query:(language:kuery,query:''),refreshInterval:(pause:!t,value:60000),time:(from:now-1h,to:now))&_a=(breakdownField:log.level,columns:!(),dataSource:(type:esql),filters:!(),hideChart:!f,interval:auto,query:(esql:'FROM%20logs-*%20%0A%7C%20WHERE%20service.name%20%3D%3D%20%22router%22%0A%20%20'),sort:!(!('@timestamp',desc)))
   port: 30001
-- id: kr5jkc770z5f
+- id: amxs2wbeu14y
   title: collector Config
   type: code
   hostname: host-1
   path: /workspace/workshop/collector/_courses/o11y--course--field--200-otel-logs--main/_challenges/03-file
-- id: 4qcxxz95lkpr
+- id: im6htfxz8yft
   title: router Source
   type: code
   hostname: host-1
   path: /workspace/workshop/src/router
-- id: lyqrwsofywhh
+- id: gquoynyprmua
   title: Terminal
   type: terminal
   hostname: host-1
@@ -35,7 +35,7 @@ lab_config:
   custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["jeu1estyxf1z","kr5jkc770z5f","4qcxxz95lkpr"],"activeTabId":"jeu1estyxf1z","size":38}},{"leaf":{"tabs":["lyqrwsofywhh"],"activeTabId":"lyqrwsofywhh","size":60}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":32}}],"orientation":"Horizontal"}}'
 enhanced_loading: null
 ---
-As noted, there are many reasons why use of OTLP logging may be impractical. Chief among them is accommodating services which cannot be instrumented with OpenTelemetry (e.g., third-party services). These services simply write their logs to disk directly, or more commonly to stdout, which is then written to disk by the Kubernetes or Docker logging framework, for example. 
+As noted, there are many reasons why use of OTLP logging may be impractical. Chief among them is accommodating services which cannot be instrumented with OpenTelemetry (e.g., third-party services). These services simply write their logs to disk directly, or more commonly to stdout, which is then written to disk by the Kubernetes or Docker logging framework, for example.
 
 To accommodate such services, we can use the [filelog receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/filelogreceiver) in the OTel Collector. In many regards, the `filelog` receiver is the OTel equivalent of Elastic's filebeat (often running as a module inside Elastic Agent).
 
@@ -92,7 +92,7 @@ cat 0.log
 
 Making Sense of JSON Logs
 ===
-Many custom applications log to a JSON format to provide some structure to the log line. To fully appreciate this benefit in a logging backend, however, you need to parse that JSON (embedded in the log line) and extract fields fo interest. 
+Many custom applications log to a JSON format to provide some structure to the log line. To fully appreciate this benefit in a logging backend, however, you need to parse that JSON (embedded in the log line) and extract fields fo interest.
 
 While you could do this with Elasticsearch using Streams (as we will see in the future challenge), with OpenTelemetry, this can also be done in the Collector using [OTTL](https://opentelemetry.io/docs/collector/transforming-telemetry/).
 
