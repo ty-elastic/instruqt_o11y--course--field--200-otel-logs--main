@@ -203,6 +203,11 @@ collectors:
           tls:
             insecure: true
       processors:
+        resource/logs_routing:
+          attributes:
+            - key: data_stream.dataset
+              from_attribute: service.name
+              action: upsert
         # [Batch Processor](https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/batchprocessor)
         batch: {} # inherit any values from helm chart
         batch/metrics:

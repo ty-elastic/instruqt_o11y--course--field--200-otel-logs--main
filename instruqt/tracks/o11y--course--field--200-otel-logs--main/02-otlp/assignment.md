@@ -129,10 +129,8 @@ One major advantage of using OTLP for logging is the ability to very easily appe
 
 These are all the logs associated with this specific transaction.
 
-Attributes
+Attributes via Structured Logging
 ===
-
-## Attributes via Structured Logging
 
 Let's say that we think we might have a problem with the Garbage Collector in our Java Virtual Machine (JVM) running too often, possibly affecting database performance. As a developer, you might think to sample the amount of time spent in GC and then report that in a log file.
 
@@ -187,7 +185,8 @@ FROM logs-*
 
 Indeed, it looks like only the "recorder-java" service deployed to the "NA" region is exhibiting this problem.
 
-## Attributes via Baggage
+Attributes via Baggage
+===
 
 Note that the log record has other custom attributes like `attributes.com.example.customer_id`. We didn't add that in our logging statement in `recorder-java`. How did it get there?
 
@@ -219,6 +218,8 @@ Let's look at the code which initially stuck `customer_id` into OTel baggage:
 3. Look for calls to `set_attribute_and_baggage()` inside the `decode_common_args()` function
 
 Here, we are pushing attributes into OTel Baggage. OTel is propagating that baggage with every call to a distributed surface. The baggage follows the context of a given span through all dependent services. Within a given service, we can leverage BaggageProcessor extensions to automatically apply metadata in baggage as attributes to the active span (including logs).
+
+![baggage](../assets/otel-baggage.png)
 
 Let's add an additional attribute in our trader service.
 

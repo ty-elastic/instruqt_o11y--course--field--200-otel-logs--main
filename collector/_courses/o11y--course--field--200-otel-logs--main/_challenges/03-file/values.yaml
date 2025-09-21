@@ -190,6 +190,11 @@ collectors:
           tls:
             insecure: true
       processors:
+        resource/logs_routing:
+          attributes:
+            - key: data_stream.dataset
+              from_attribute: service.name
+              action: upsert
         transform/parse_json_body:
             error_mode: ignore
             log_statements:
