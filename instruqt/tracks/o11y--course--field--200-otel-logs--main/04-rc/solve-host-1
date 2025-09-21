@@ -1,0 +1,6 @@
+source /opt/workshops/elastic-retry.sh
+export $(curl http://kubernetes-vm:9000/env | xargs)
+
+cd /workspace/workshop
+cp -f k8s/yaml/_courses/o11y--course--field--200-otel-logs--main/_challenges/04-rc/postgresql.yaml k8s/yaml/postgresql.yaml
+./deploy.sh -s postgresql

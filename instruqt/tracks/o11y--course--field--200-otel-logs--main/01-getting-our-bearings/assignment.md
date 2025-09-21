@@ -62,7 +62,3 @@ When you are ready, click the `Next` button to continue.
 This workshop will heavily leverage ES|QL, Elastic's query-time language, to analyze our nginx reverse proxy logs. You can enter your queries in the pane at the top of the Elasticsearch tab. You can change the time window of your search using the Time Filter. To execute a search, click the Play/Refresh icon.
 
 ![1_discover.png](../assets/1_discover.png)
-
-# VS Code
-
-This work

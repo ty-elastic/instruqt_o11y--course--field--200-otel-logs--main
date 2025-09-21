@@ -7,31 +7,31 @@ export INSTRUQT_TRACK_SLUG=o11y--course--field--200-otel-logs--main
 
 # ------------- VSCODE
 
-WORKSPACE_DIR=/workspace
-WORKSHOP_DIR=$WORKSPACE_DIR/workshop
-echo '{
-{
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "terminal",
-            "type": "shell",
-            "command": "/usr/bin/bash",
-            "args": [
-                "-l"
-            ],
-            "isBackground": true,
-            "problemMatcher": [],
-            "presentation": {
-                "group": "none"
-            },
-            "runOptions": {
-                "runOn": "folderOpen"
-            },
-        }
-    ]
-}' >> $WORKSPACE_DIR/.vscode/tasks.json
-source /opt/workshops/vscode-start.sh
+# WORKSPACE_DIR=/workspace
+# WORKSHOP_DIR=$WORKSPACE_DIR/workshop
+# echo '{
+# {
+#     "version": "2.0.0",
+#     "tasks": [
+#         {
+#             "label": "terminal",
+#             "type": "shell",
+#             "command": "/usr/bin/bash",
+#             "args": [
+#                 "-l"
+#             ],
+#             "isBackground": true,
+#             "problemMatcher": [],
+#             "presentation": {
+#                 "group": "none"
+#             },
+#             "runOptions": {
+#                 "runOn": "folderOpen"
+#             },
+#         }
+#     ]
+# }' >> $WORKSPACE_DIR/.vscode/tasks.json
+# source /opt/workshops/vscode-start.sh
 
 # ------------- OTEL
 
@@ -44,11 +44,11 @@ cd /workspace/workshop
 
 # ------------- WAIT
 
-# retry_command_lin curl --silent --fail --output /dev/null --header "Authorization: Basic $ELASTICSEARCH_AUTH_BASE64" "$ELASTICSEARCH_URL/_cat/indices/logs-proxy.otel-default?allow_no_indices=false"
+retry_command_lin curl --silent --fail --output /dev/null --header "Authorization: Basic $ELASTICSEARCH_AUTH_BASE64" "$ELASTICSEARCH_URL/_cat/indices/logs-proxy.otel-default?allow_no_indices=false"
 
-# curl -X POST "$ELASTICSEARCH_URL/logs-proxy.otel-default/_rollover" \
-#     --header 'Content-Type: application/json' \
-#     --header "Authorization: Basic $ELASTICSEARCH_AUTH_BASE64"
+curl -X POST "$ELASTICSEARCH_URL/logs-proxy.otel-default/_rollover" \
+    --header 'Content-Type: application/json' \
+    --header "Authorization: Basic $ELASTICSEARCH_AUTH_BASE64"
 
 # echo "Wait for realtime"
 # retry_command_lin curl --silent --fail --output /dev/null http://kubernetes-vm:32003/status/realtime
