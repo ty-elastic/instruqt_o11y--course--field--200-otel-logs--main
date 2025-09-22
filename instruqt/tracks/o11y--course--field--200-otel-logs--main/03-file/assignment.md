@@ -19,7 +19,7 @@ tabs:
   url: https://ottl.run/
   new_window: true
 - id: amxs2wbeu14y
-  title: collector Config
+  title: Collector Config
   type: code
   hostname: host-1
   path: /workspace/workshop/collector/values.yaml

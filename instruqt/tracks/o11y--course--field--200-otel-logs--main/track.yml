@@ -1,8 +1,8 @@
 slug: o11y--course--field--200-otel-logs--main
 id: wiqwwsxohjsn
 title: 'Observability 200: Logging with OpenTelemetry'
-description: In this track, we explore best practices using OpenTelemetry and Elastic to collect
-  and parse logs
+description: In this track, we explore best practices using OpenTelemetry and Elastic
+  to collect and parse logs
 icon: ""
 tags:
 - otel-200
@@ -23,5 +23,5 @@ lab_config:
     name: modern-dark
   override_challenge_layout: false
   hideStopButton: false
-checksum: "1449505954558390095"
+checksum: "13863630559564558129"
 enhanced_loading: false

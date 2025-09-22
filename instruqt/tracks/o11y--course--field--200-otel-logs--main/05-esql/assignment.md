@@ -19,11 +19,7 @@ timelimit: 600
 enhanced_loading: null
 ---
 
-In many cases, you might be ok to parse your logs on-demand. As an example, i can use ES|QL to parse my nginx proxy logs as needed.
-
-## ES|QL
-
-Let's first try query-time parsing using ES|QL:
+In many cases, it might suffice to simply parse your logs on-demand rather than to do so at the edge. Elastic's ES|QL piped query language makes this really easy:
 
 1. Open the [button label="Elasticsearch"](tab-1) tab
 2. Execute the following query:

@@ -19,7 +19,7 @@ timelimit: 600
 enhanced_loading: null
 ---
 
-So far, we've been using ES|QL to parse our proxy logs at query-time. While incredibly powerful for quick analysis, we can do even more with our logs if we parse them at ingest-time.
+We can do even more with our logs if we parse them at ingest-time.
 
 While you could use our OOTB integration to parse nginx logs, we've customized our nginx logs with a duration. Streams is really good at working with this.
 
@@ -29,7 +29,6 @@ We will be working with Elastic [Streams](https://www.elastic.co/docs/solutions/
 
 1. Select `logs-proxy.otel-default` from the list of data streams (if you start typing, Elasticsearch will help you find it)
 2. Select the `Processing` tab
-
 
 ## Parsing the log message
 
