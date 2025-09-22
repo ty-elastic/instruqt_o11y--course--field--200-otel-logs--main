@@ -364,6 +364,8 @@ Ok. We see `1.com.example.method`, but that's ugly. Let's fix it with OTTL!
 
 Much better. That last line removes the numeric prefix from any attributes and seems to work as expected.
 
+# Putting It Into Production
+
 Let's put it into production, the same as before:
 1. Open the [button label="Collector Config"](tab-2) tab
 2. Open the file `values.yaml`

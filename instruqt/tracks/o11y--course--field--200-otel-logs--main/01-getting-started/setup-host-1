@@ -5,37 +5,13 @@ export INSTRUQT_TRACK_SLUG=o11y--course--field--200-otel-logs--main
 
 /opt/workshops/clone-code.sh -r ty-elastic/instruqt_$INSTRUQT_TRACK_SLUG -d false
 
-# ------------- VSCODE
-
-# WORKSPACE_DIR=/workspace
-# WORKSHOP_DIR=$WORKSPACE_DIR/workshop
-# echo '{
-# {
-#     "version": "2.0.0",
-#     "tasks": [
-#         {
-#             "label": "terminal",
-#             "type": "shell",
-#             "command": "/usr/bin/bash",
-#             "args": [
-#                 "-l"
-#             ],
-#             "isBackground": true,
-#             "problemMatcher": [],
-#             "presentation": {
-#                 "group": "none"
-#             },
-#             "runOptions": {
-#                 "runOn": "folderOpen"
-#             },
-#         }
-#     ]
-# }' >> $WORKSPACE_DIR/.vscode/tasks.json
-# source /opt/workshops/vscode-start.sh
-
 # ------------- OTEL
 
 source /workspace/workshop/instruqt/scripts/elastic-otel.sh
+
+# ------------- STREAMS
+
+source /workspace/workshop/instruqt/scripts/elastic-streams.sh
 
 # ------------- DEPLOY
 

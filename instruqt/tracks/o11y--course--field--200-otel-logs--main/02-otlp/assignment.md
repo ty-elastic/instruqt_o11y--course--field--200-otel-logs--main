@@ -272,5 +272,5 @@ Note that Baggage is also automatically applied to every child span:
 5. Click on the `Transactions` tab
 6. Scroll down and click on the `POST /trade/request` transaction under `Transactions`
 7. Scroll down to the waterfall graph under `Trace sample`
-8. Click on the `INSERT trades.trades` database span
+8. Click on the `INSERT trades.trades` database span recorded by the `recorder-java` service
 9. Note the presence of the `subscription` attribute!
