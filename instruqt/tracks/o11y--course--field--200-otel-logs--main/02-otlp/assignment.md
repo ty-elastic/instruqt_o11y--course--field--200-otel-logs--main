@@ -175,7 +175,7 @@ FROM logs-*
 Note the added attribute `attributes.com.example.gc_time`!
 
 > [!NOTE]
-> if `gc_time` is not yet present as an attribute, refresh the view in Discover until there are valid results
+> if `attributes.com.example.gc_time` is not yet present, refresh the view in Discover until there are valid results
 
 Now let's graph `gc_time` to answer our question.
 
@@ -247,6 +247,24 @@ Now let's recompile and redeploy our `trader` service.
 And now let's check our work in Elasticsearch:
 
 1. Open the [button label="Elasticsearch"](tab-0) tab
+2. Click `Discover` in the left-hand navigation pane
+3. Execute the following query:
+```esql
+FROM logs-*
+| WHERE service.name == "recorder-java" and message LIKE "*trade committed*"
+| WHERE attributes.com.example.subscription IS NOT NULL
+```
+4. Open the first log record by clicking on the double arrow icon under `Actions`
+5. Click on the `Attributes` tab
+
+Note the added attribute `attributes.com.example.subscription` in the `recorder-java` logs, automatically passed along via OTel Baggage from where they inserted by `trader`.
+
+> [!NOTE]
+> if `attributes.com.example.subscription` is not yet present as an attribute, refresh the view in Discover until there are valid results
+
+Note that Baggage is also automatically applied to every child span:
+
+1. Open the [button label="Elasticsearch"](tab-0) tab
 1. Click `Applications` > `Service Inventory` in the left-hand navigation pane
 2. Click on the `Service Map` tab
 3. Click on the `trader` service
@@ -254,9 +272,5 @@ And now let's check our work in Elasticsearch:
 5. Click on the `Transactions` tab
 6. Scroll down and click on the `POST /trade/request` transaction under `Transactions`
 7. Scroll down to the waterfall graph under `Trace sample`
-8. Click on the `Logs` tab
-9. Click on the `trade committed for <customer_id>` log line emitted by the `recorder-java` service
-10. Note the presence of the `subscription` attribute!
-
-> [!NOTE]
-> if `subscription` is not yet present as an attribute, click on the `Refresh` button at the top of the page, click on the `Overview` tab, then click again on the `Transactions` tab and follow from step 6 above.
+8. Click on the `INSERT trades.trades` database span
+9. Note the presence of the `subscription` attribute!
