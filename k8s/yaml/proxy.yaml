@@ -47,3 +47,22 @@ spec:
   selector:
     app: trading
     service: proxy
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: trading
+    service: proxy
+  name: proxy-ext
+  namespace: $NAMESPACE
+spec:
+  ports:
+    - name: proxy
+      port: 8080
+      targetPort: 80
+  type: LoadBalancer
+  selector:
+    app: trading
+    service: proxy
+---

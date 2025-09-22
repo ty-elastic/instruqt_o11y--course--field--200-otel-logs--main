@@ -74,9 +74,11 @@ for dir in ./tracks/*/; do
 
           sed -n '/---/,/---/p' "$challenge/assignment.md" > input.yaml
           ch_title=$(yq .title input.yaml)
+          ch_title=$(echo $ch_title | sed -e "s/--- null$//")
           echo $ch_title
           rm input.yaml
 
+          echo "# $ch_title" >> input.md
           sed -e '/---/,/---/d' "$challenge/assignment.md" >> input.md
           echo "" >> input.md
           echo "___" >> input.md

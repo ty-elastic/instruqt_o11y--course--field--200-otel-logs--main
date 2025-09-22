@@ -1,8 +1,8 @@
 ---
-slug: getting-our-bearings
+slug: getting-started
 id: izlqqkzxglpx
 type: challenge
-title: Getting our bearings
+title: Getting Started
 tabs:
 - id: u2nmw20sfz6j
   title: Elasticsearch
@@ -38,7 +38,9 @@ We will be working with a live Elasticsearch instance, displayed in the browser 
 > [!NOTE]
 > You are welcome to explore each service and our APM solution by clicking on each service icon in the Service Map and selecting `Service Details`
 
-When you are ready, let's quick pivot to Discover where we can easily query and parse our logs. To do so, click `Discover` in the left-hand navigation pane
+When you are ready, let's quick pivot to Discover where we can easily query and parse our logs.
+1. Click `Discover` in the left-hand navigation pane
+2. Click `Try ES|QL`
 
 This workshop will leverage [ES|QL](https://www.elastic.co/docs/reference/query-languages/esql), Elastic's query-time language, to query our logs. Please refer to the following diagram to familiarize yourself with the ES|QL interface in Discover. You can enter your queries in the pane at the top of the Elasticsearch Discover. You can change the time window of your search using the Time Filter. To execute a search, click the Play/Refresh icon.
 

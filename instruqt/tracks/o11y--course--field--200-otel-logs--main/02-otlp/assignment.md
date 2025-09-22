@@ -125,8 +125,7 @@ One major advantage of using OTLP for logging is the ability to very easily appe
 4. Click on the `Transactions` tab
 5. Click on the `POST /record` tab
 6. Scroll down to `Trace sample`
-7. Go to the second (`2`) `Trace sample`
-8. Click on the `Logs` tab
+7. Click on the `Logs` tab
 
 These are all the logs associated with this particular trace sample.
 
