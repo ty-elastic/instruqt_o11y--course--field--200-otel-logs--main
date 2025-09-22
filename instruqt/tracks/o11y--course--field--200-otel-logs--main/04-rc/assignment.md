@@ -71,13 +71,14 @@ Configuring the Service
 Now we need to modify our `postgresql.yaml` to include our parsing directives.
 
 1. Open the [button label="postgresql Config"](tab-2) tab
-2. Find the following lines under `spec/template/metadata/annotations`:
+2. Open the file `postgres.yaml`
+3. Find the following lines under `spec/template/metadata/annotations`:
 ```yaml,nocopy
       annotations:
         io.opentelemetry.discovery.logs/enabled: "true"
         # WORKSHOP CONTENT GOES HERE
 ```
-3. Replace it with the following:
+4. Replace it with the following:
 ```yaml
       annotations:
         io.opentelemetry.discovery.logs/enabled: "true"

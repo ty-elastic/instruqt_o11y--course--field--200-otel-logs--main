@@ -198,13 +198,14 @@ This looks great. Let's put this configuration into production!
 # Putting It Into Production
 
 1. Open the [button label="Collector Config"](tab-2) tab
-2. Find the following block under `collectors/daemon/config/processors`:
+2. Open the file `values.yaml`
+3. Find the following block under `collectors/daemon/config/processors`:
 ```yaml,nocopy
         transform/parse_json_body:
             error_mode: ignore
             # WORKSHOP CONTENT GOES HERE
 ```
-3. Replace it with the OTTL we developed above:
+4. Replace it with the OTTL we developed above:
 ```yaml
         transform/parse_json_body:
             error_mode: ignore
@@ -356,13 +357,14 @@ Much better. That last line removes the numeric prefix from any attributes and s
 
 Let's put it into production, the same as before:
 1. Open the [button label="Collector Config"](tab-2) tab
-2. Replace your existing block under `collectors/daemon/config/processors`:
+2. Open the file `values.yaml`
+3. Replace your existing block under `collectors/daemon/config/processors`:
 ```yaml,nocopy
         transform/parse_json_body:
             error_mode: ignore
             ...
 ```
-3. Replace with the OTTL we developed above:
+4. Replace with the OTTL we developed above:
 ```yaml
         transform/parse_json_body:
             error_mode: ignore
