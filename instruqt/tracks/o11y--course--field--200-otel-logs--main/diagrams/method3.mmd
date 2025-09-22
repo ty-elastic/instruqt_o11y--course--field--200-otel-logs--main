@@ -2,7 +2,7 @@ flowchart TB
 
     subgraph Collector[OpenTelemetry Collector]
         RecvCreator[Receiver: receivercreator]
-        FileRecv[Receiver: filelog]
+        FileRecv[Receiver: filelog for service]
         Processor1[Processor: enrichment]
         Processor2[Processor: transform]
         ElasticExporter[Exporter: Elasticsearch]

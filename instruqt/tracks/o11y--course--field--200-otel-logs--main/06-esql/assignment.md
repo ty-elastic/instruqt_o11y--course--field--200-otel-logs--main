@@ -19,7 +19,7 @@ timelimit: 600
 enhanced_loading: null
 ---
 
-In some cases, it might suffice to simply parse your logs on-demand rather than to do so at the edge. This is particularly beneficial to SREs who need to parse as part of a one-time Root Cause Analysis. 
+In some cases, it might suffice to simply parse your logs on-demand rather than to do so at the edge. This is particularly beneficial to SREs who need to parse as part of a one-time Root Cause Analysis.
 
 Elastic's ES|QL piped query language makes this really easy:
 
