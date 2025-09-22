@@ -40,6 +40,7 @@ In this model, we will be sending logs directly from a service to an [OpenTeleme
 ![method-1](../assets/method1.mmd.png)
 
 Looking at the diagram:
+
 1) a service leverages an existing logging framework (e.g., [logback](https://logback.qos.ch) in Java) to generate log statements
 2) on service startup, the OTel SDK injects a new Appender module into the logging framework. This module formats the log metadata to appropriate OTel semantic conventions (e.g., log.level), adds appropriate contextual metadata (e.g., trace.id), and outputs the log lines via OTLP (typically buffered) to a configured OTel Collector
 3) an OTel Collector (typically, but not necessarily) on the same node as the service receives the log lines via the `otlp` receiver
@@ -48,16 +49,19 @@ Looking at the diagram:
 
 # Assumptions
 While this model is relatively simple to implement, it assumes several things:
+
 1) The service can be instrumented with OpenTelemetry (either through runtime zero-configuration instrumentation, or through explicit instrumentation). This essentially rules out use of this method for most opaque, third-party applications and services.
 2) Your OTel pipelines are robust enough to forgo file-based logging. Traditional logging relied on services writing to files and agents reading or "tailing" those log files. File-based logging inherently adds a semi-reliable, FIFO, disk-based queue between services and the Collector. If there is a downstream failure in the telemetry pipeline (e.g., a failure in the Collector or downstream of the Collector) or back-pressure from Elasticsearch, the file will serve as a temporary, reasonably robust buffer. Notably, this concern can be mitigated with Collector-based disk queues and/or the use of a Kafka-like queue somewhere in-between the first Collector and Elasticsearch.
 
 # Advantages
 There are, of course, many advantages to using OTLP as a logging protocol where possible:
+
 1) you don't have to deal with file rotation or disk overflow due to logs
 2) there is less io overhead (no file operations) on the node
 3) the Collector need not be local to the node running the applications (though you would typically want a Collector per node for other reasons)
 
 Additionally, exporting logs from a service using the OTel SDK offers the following general benefits:
+
 1) logs are automatically formatted with OTel Semantic Conventions
 2) key/values applied to log statements are automatically emitted as attributes
 3) traceid and spanid are automatically added when appropriate

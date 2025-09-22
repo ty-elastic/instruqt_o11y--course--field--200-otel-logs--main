@@ -17,7 +17,7 @@ tabs:
   title: OTTL Playground
   type: website
   url: https://ottl.run/
-  new_window: true
+  new_window: false
 - id: amxs2wbeu14y
   title: Collector Config
   type: code

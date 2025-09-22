@@ -2,7 +2,7 @@
 slug: esql
 id: dsowylbzjzkr
 type: challenge
-title: Using ES|QL to Parse OpenTelemetry logs
+title: Using ES|QL to Parse OpenTelemetry Logs
 notes:
 - type: text
   contents: In this challenge, we will look at how to parse OpenTelemetry logs using

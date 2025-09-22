@@ -23,6 +23,7 @@ In this lab, we will explore several models for using OpenTelemetry to collect a
 In this lab, we will be working with an exemplary stock trading system, comprised of several services and their dependencies running in Kubernetes. We are using the OpenTelemetry Operator to automatically instrument all of our services.
 
 Our trading system is comprised of:
+
 * `proxy`: a nginx reverse proxy which proxies requests from the outside into the trading system
 * `trader`: a python application that trades stocks on orders from customers
 * `router`: a node.js application that routes committed trade records
@@ -37,12 +38,23 @@ We will be working with a live Elasticsearch instance, displayed in the browser 
 > [!NOTE]
 > You are welcome to explore each service and our APM solution by clicking on each service icon in the Service Map and selecting `Service Details`
 
-When you are ready, let's quick pivot to Discover where we can easily query and parse our logs.
+When you are ready, let's pivot over to Discover where we can easily query and parse our logs.
+
 1. Click `Discover` in the left-hand navigation pane
 2. Click `Try ES|QL`
 
 This workshop will leverage [ES|QL](https://www.elastic.co/docs/reference/query-languages/esql), Elastic's query-time language, to query our logs. Please refer to the following diagram to familiarize yourself with the ES|QL interface in Discover. You can enter your queries in the pane at the top of the Elasticsearch Discover. You can change the time window of your search using the Time Filter. To execute a search, click the Play/Refresh icon.
 
 ![1_discover.png](../assets/1_discover.png)
+
+Let's execute a test query to return and parse logs associated with our `proxy` service:
+
+```esql
+FROM logs-proxy.otel-default
+| GROK body.text "%{IPORHOST:client_ip} %{USER:ident} %{USER:auth} \\[%{HTTPDATE:timestamp}\\] \"%{WORD:http_method} %{NOTSPACE:request_path} HTTP/%{NUMBER:http_version}\" %{NUMBER:status_code} %{NUMBER:body_bytes_sent:int} %{NUMBER:duration:float} \"%{DATA:referrer}\" \"%{DATA:user_agent}\"" // parse access log
+| WHERE status_code IS NOT NULL
+| EVAL @timestamp = DATE_PARSE("dd/MMM/yyyy:HH:mm:ss Z", timestamp) // use embedded timestamp as record timestamp
+| KEEP @timestamp, client_ip, http_method, request_path, status_code, user_agent
+```
 
 When you are ready, click the `Next` button to continue.
