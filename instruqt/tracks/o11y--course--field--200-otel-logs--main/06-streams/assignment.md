@@ -2,7 +2,7 @@
 slug: streams
 id: i6ixclinxgoc
 type: challenge
-title: Using Streams to Parse OTel logs
+title: Using Streams to Parse OpenTelemetry logs
 notes:
 - type: text
   contents: In this challenge, we will look at how to parse OpenTelemetry logs using
