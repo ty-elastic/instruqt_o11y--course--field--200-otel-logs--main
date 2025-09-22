@@ -13,6 +13,10 @@ source /workspace/workshop/instruqt/scripts/elastic-otel.sh
 
 source /workspace/workshop/instruqt/scripts/elastic-streams.sh
 
+# ------------- OTTL
+
+docker run -d -p 9876:8080 ottl-playground:$INSTRUQT_TRACK_SLUG
+
 # ------------- DEPLOY
 
 cd /workspace/workshop

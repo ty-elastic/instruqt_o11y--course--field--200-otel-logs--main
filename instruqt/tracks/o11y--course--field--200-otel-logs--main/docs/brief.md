@@ -2,13 +2,13 @@
 
 # Logging with OpenTelemetry
 
-This is a hands-on workshop showcasing various methods for working with OpenTelemetry logs using Elastic. 
+his is a hands-on, developer-centric workshop showcasing various methods for working with OpenTelemetry logs and Elastic. 
 
 ## Background
 
 The advent of OpenTelemetry has forever changed how we capture observability signals. While OTel initially focused on delivering traces and metrics, support for collection of logs is now stable and gaining adoption, particularly in Kubernetes environments.
 
-In this lab, we will explore several state-of-the-art models for using OpenTelemetry to collect and parse logs. Participants will be "hands-on-keyboard", modifying code and configurations.
+In this lab, we will explore several state-of-the-art models for using OpenTelemetry to collect and parse logs. Participants will be "hands-on-keyboard", modifying code and OTel configurations.
 
 ## Time Required
 

@@ -15,9 +15,10 @@ tabs:
   port: 30001
 - id: fyb01yrpxc5q
   title: OTTL Playground
-  type: website
-  url: https://ottl.run/
-  new_window: true
+  type: service
+  hostname: host-1
+  path: /
+  port: 9876
 - id: amxs2wbeu14y
   title: Collector Config
   type: code

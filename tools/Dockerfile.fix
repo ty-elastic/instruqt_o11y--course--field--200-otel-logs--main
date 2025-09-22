@@ -1,7 +1,7 @@
 # Frontend
 FROM node:lts AS webbuilder
-WORKDIR /work
-COPY web web
+WORKDIR /web
+COPY web .
 COPY Makefile .
 RUN make build-web
 
@@ -17,7 +17,7 @@ RUN if [ "$SKIP_BUILD_UNREGISTERED_VERSIONS" = "" ]; then make build-unregistere
 FROM alpine
 RUN apk add brotli nginx nginx-mod-http-brotli
 COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
-COPY --from=webbuilder /work/web/public /usr/share/nginx/html
+COPY --from=webbuilder /web/public /usr/share/nginx/html
 COPY --from=wasmbuilder /build/web/public/wasm /usr/share/nginx/html/wasm
 RUN for file in /usr/share/nginx/html/wasm/ottlplayground-*.wasm ; do  brotli -9j "$file" ; done
 CMD ["nginx", "-g", "daemon off;"]
