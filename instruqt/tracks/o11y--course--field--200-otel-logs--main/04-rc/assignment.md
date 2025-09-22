@@ -201,7 +201,7 @@ Let's check to see if our logs are being parsed as expected.
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* 
+FROM logs-*
 | WHERE service.name == "postgresql"
 | WHERE trace.id IS NOT NULL
 ```

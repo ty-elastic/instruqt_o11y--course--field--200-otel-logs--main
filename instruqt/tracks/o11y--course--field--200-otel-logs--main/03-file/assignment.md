@@ -252,7 +252,7 @@ When you see that the replacement daemonset Collectors have been up for at least
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* 
+FROM logs-*
 | WHERE service.name == "router"
 | WHERE message LIKE "routing request*"
 ```
@@ -296,7 +296,7 @@ Now let's see how this looks in Elasticsearch:
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* 
+FROM logs-*
 | WHERE service.name == "router"
 | WHERE message LIKE "routing request*"
 | WHERE "attributes.1.com.example.method" IS NOT NULL
@@ -422,7 +422,7 @@ When you see that the replacement daemonset Collectors have been up for at least
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* 
+FROM logs-*
 | WHERE service.name == "router"
 | WHERE message LIKE "routing request*"
 | WHERE "attributes.com.example.method" IS NOT NULL
