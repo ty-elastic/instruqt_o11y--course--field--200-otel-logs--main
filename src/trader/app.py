@@ -9,8 +9,7 @@ import math
 import requests
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from opentelemetry import trace, baggage, context, metrics
-from opentelemetry.processor.baggage import BaggageSpanProcessor, ALLOW_ALL_BAGGAGE_KEYS
+from opentelemetry import trace, baggage, context
 from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
 from opentelemetry.sdk.metrics.export import (
     PeriodicExportingMetricReader,

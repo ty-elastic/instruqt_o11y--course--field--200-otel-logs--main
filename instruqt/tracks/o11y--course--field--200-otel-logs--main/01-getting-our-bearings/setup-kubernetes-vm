@@ -6,8 +6,8 @@ export GITHUB_REPO=https://github.com/ty-elastic/instruqt_$INSTRUQT_TRACK_SLUG
 
 # ------------- FIX Kibana
 
-kubectl rollout restart deployment/kibana-kb
-retry_command_lin check_es_health
+# kubectl rollout restart deployment/kibana-kb
+# retry_command_lin check_es_health
 
 # ------------- CODE
 

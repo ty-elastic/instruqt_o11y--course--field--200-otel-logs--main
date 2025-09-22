@@ -1,6 +1,7 @@
 flowchart TB
 
     subgraph Collector[OpenTelemetry Collector]
+        RecvCreator[Receiver: receivercreator]
         FileRecv[Receiver: filelog]
         Processor1[Processor: enrichment]
         Processor2[Processor: transform]
@@ -8,10 +9,18 @@ flowchart TB
         FileRecv ==> Processor1 ==> Processor2 ==> ElasticExporter
     end
 
+    subgraph Kubernetes
+        Scheduler
+    end
+
     Service1 == "log / text" ==> File
     File == "log / text" ==> FileRecv
 
     subgraph Service1[service]
     end
+
+    Scheduler -. start+yaml .-> RecvCreator
+    Scheduler -. start+yaml .-> Service1
+    RecvCreator -. start+parser .-> FileRecv
 
     ElasticExporter == "log / http" ==> nodeId(((Elasticsearch)))

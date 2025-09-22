@@ -38,7 +38,7 @@ Modifying the Collector config to parse specific logs feels awkward. Ideally, we
 
 Fortunately, on Kubernetes, just such an option exists: the [Receiver Creator](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/receiver/receivercreator/README.md) can be used to dynamically instantiate `file` receivers with a custom configuration driven by the deployment yaml of each service.
 
-it might make sense if most of your custom logs follow a common format, but typcially the format is unique and bespoke to specific apps. If your apps are deployed on k8s, we can use the Receiver Creator to move the parsing config to the app yaml rather than values.yaml.
+![method-3](../assets/method3.mmd.png)
 
 Let's have a look at our postgresql logs.
 

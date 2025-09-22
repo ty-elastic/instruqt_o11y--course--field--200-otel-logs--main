@@ -3,9 +3,6 @@ RUN apt-get update && apt-get install -y curl patch && rm -rf /var/lib/apt/lists
 
 WORKDIR /python-docker
 
-COPY lib/ .
-RUN --mount=type=cache,target=/root/.cache/pip pip3 install --root-user-action=ignore -e baggage-log-record-processor
-
 COPY requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/pip pip3 install --root-user-action=ignore -r requirements.txt
 
@@ -16,12 +13,6 @@ ARG VARIANT=none
 
 COPY app.py .
 COPY model.py .
-COPY _courses _courses
-
-# RUN if [ -d "_courses/$VARIANT" ]; then \
-#         echo $VARIANT; \
-#         patch < _courses/$VARIANT/init.patch; \
-#     fi
 
 ENV ROUTER_HOST="router"
 ENV PYTHONUNBUFFERED=1
