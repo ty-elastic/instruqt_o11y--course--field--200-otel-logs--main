@@ -14,6 +14,32 @@ cd tools/pandoc
 docker build --platform linux/amd64 -t pandoc-inter .
 cd ../..
 
+cd ..
+cd collector/_courses
+./diff.sh
+cd ../../instruqt
+
+cd ..
+cd k8s/yaml/_courses
+./diff.sh
+cd ../../../instruqt
+
+cd ..
+cd src/recorder-java/_courses
+./diff.sh
+cd ../../../instruqt
+
+cd ..
+cd src/router/_courses
+./diff.sh
+cd ../../../instruqt
+
+cd ..
+cd src/trader/_courses
+./diff.sh
+cd ../../../instruqt
+
+
 for dir in ./tracks/*/; do
   echo $dir
   if [[ -d "$dir" ]]; then
