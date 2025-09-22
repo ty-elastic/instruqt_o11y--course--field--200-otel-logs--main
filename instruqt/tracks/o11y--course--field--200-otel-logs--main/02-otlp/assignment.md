@@ -32,7 +32,7 @@ tabs:
 difficulty: ""
 timelimit: 600
 lab_config:
-  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["jeu1estyxf1z","kr5jkc770z5f","4qcxxz95lkpr"],"activeTabId":"jeu1estyxf1z","size":72}},{"leaf":{"tabs":["lyqrwsofywhh"],"activeTabId":"lyqrwsofywhh","size":25}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":31}}],"orientation":"Horizontal"}}'
+  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["jeu1estyxf1z","kr5jkc770z5f","4qcxxz95lkpr"],"activeTabId":"jeu1estyxf1z","size":82}},{"leaf":{"tabs":["lyqrwsofywhh"],"activeTabId":"lyqrwsofywhh","size":15}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":31}}],"orientation":"Horizontal"}}'
 enhanced_loading: null
 ---
 In this model, we will be sending logs directly from a service to an [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/) over the network using the [OTLP](https://opentelemetry.io/docs/specs/otel/protocol/) protocol. This is the default mechanism most OpenTelemetry SDKs use for exporting logs from a service.
@@ -125,9 +125,10 @@ One major advantage of using OTLP for logging is the ability to very easily appe
 4. Click on the `Transactions` tab
 5. Click on the `POST /record` tab
 6. Scroll down to `Trace sample`
-7. Click on the `Logs` tab
+7. Go to the second (`2`) `Trace sample`
+8. Click on the `Logs` tab
 
-These are all the logs associated with this specific transaction.
+These are all the logs associated with this particular trace sample.
 
 Attributes via Structured Logging
 ===
@@ -184,7 +185,7 @@ FROM logs-*
 | STATS count = MAX(attributes.com.example.gc_time)  BY attributes.com.example.region, BUCKET(@timestamp, 1 minute)
 ```
 
-Indeed, it looks like only the "recorder-java" service deployed to the "NA" region is exhibiting this problem.
+Indeed, it looks like only the `recorder-java` service deployed to the `NA` region is exhibiting this problem.
 
 Attributes via Baggage
 ===

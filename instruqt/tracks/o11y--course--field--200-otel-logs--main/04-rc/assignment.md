@@ -31,10 +31,10 @@ tabs:
 difficulty: ""
 timelimit: 600
 lab_config:
-  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["vgilav3kazur","ubyi9wpnvjzg","6ebux7uxhpyo"],"activeTabId":"vgilav3kazur","size":72}},{"leaf":{"tabs":["5luf3xjq6izp"],"activeTabId":"5luf3xjq6izp","size":25}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":31}}],"orientation":"Horizontal"}}'
+  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["vgilav3kazur","ubyi9wpnvjzg","6ebux7uxhpyo"],"activeTabId":"vgilav3kazur","size":82}},{"leaf":{"tabs":["5luf3xjq6izp"],"activeTabId":"5luf3xjq6izp","size":15}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":31}}],"orientation":"Horizontal"}}'
 enhanced_loading: null
 ---
-Modifying the Collector config to parse specific logs feels awkward. Ideally, we would push bespoke parsing configurations to the deployment of the app or service itself. Realistically, it is the service which is in the best position to know the nuances of its custom logging pattern.
+Modifying the Collector config to parse specific logs feels awkward. Ideally, we could push bespoke parsing configurations to the deployment of the app or service itself. Realistically, it is the service which is in the best position to know the nuances of its custom logging pattern.
 
 Fortunately, on Kubernetes, just such an option exists: the [Receiver Creator](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/receiver/receivercreator/README.md) can be used to dynamically instantiate `file` receivers with a custom configuration driven by the deployment yaml of each service.
 
@@ -66,9 +66,16 @@ Let's have a look at the Receiver Creator config
 Now we need to modify our `postgresql.yaml` to include our directives.
 
 1. Open the [button label="postgresql Config"](tab-2) tab
-2. Search for the comment `# WORKSHOP CONTENT GOES HERE`
+2. Find the following lines under `spec/template/metadata/annotations`:
+```yaml,nocopy
+      annotations:
+        io.opentelemetry.discovery.logs/enabled: "true"
+        # WORKSHOP CONTENT GOES HERE
+```
 3. Replace it with the following:
 ```yaml
+      annotations:
+        io.opentelemetry.discovery.logs/enabled: "true"
         io.opentelemetry.discovery.logs/config: |
           operators:
           - type: container

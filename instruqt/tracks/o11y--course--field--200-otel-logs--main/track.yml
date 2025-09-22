@@ -1,7 +1,7 @@
 slug: o11y--course--field--200-otel-logs--main
 id: wiqwwsxohjsn
 title: 'Observability 200: Logging with OpenTelemetry'
-description: In this track, we explore best practices to use OpenTelemetry to collect
+description: In this track, we explore best practices using OpenTelemetry and Elastic to collect
   and parse logs
 icon: ""
 tags:
@@ -17,7 +17,8 @@ lab_config:
   sidebar_enabled: true
   feedback_recap_enabled: true
   feedback_tab_enabled: false
-  loadingMessages: true
+  loadingMessages:
+  - Setting up your Elastic experience...
   theme:
     name: modern-dark
   override_challenge_layout: false

@@ -36,7 +36,7 @@ tabs:
 difficulty: ""
 timelimit: 600
 lab_config:
-  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["t3tg2slqodjt","fyb01yrpxc5q","amxs2wbeu14y","im6htfxz8yft"],"activeTabId":"t3tg2slqodjt","size":72}},{"leaf":{"tabs":["gquoynyprmua"],"activeTabId":"gquoynyprmua","size":25}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":31}}],"orientation":"Horizontal"}}'
+  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["t3tg2slqodjt","fyb01yrpxc5q","amxs2wbeu14y","im6htfxz8yft"],"activeTabId":"t3tg2slqodjt","size":82}},{"leaf":{"tabs":["gquoynyprmua"],"activeTabId":"gquoynyprmua","size":15}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":31}}],"orientation":"Horizontal"}}'
 enhanced_loading: null
 ---
 There are many reasons why use of OTLP-based logging may be impractical. Chief among them is accommodating services which cannot be instrumented with OpenTelemetry (e.g., third-party services). These services simply write their logs to disk directly, or more commonly to stdout, which is then written to disk by the Kubernetes or Docker logging provider, for example.
@@ -198,13 +198,13 @@ This looks great. Let's put this configuration into production!
 # Putting It Into Production
 
 1. Open the [button label="Collector Config"](tab-2) tab
-2. Find the following lines under `collectors/daemon/config/processors`:
+2. Find the following block under `collectors/daemon/config/processors`:
 ```yaml,nocopy
         transform/parse_json_body:
             error_mode: ignore
             # WORKSHOP CONTENT GOES HERE
 ```
-3. Replace them with the OTTL we developed above:
+3. Replace it with the OTTL we developed above:
 ```yaml
         transform/parse_json_body:
             error_mode: ignore
@@ -269,10 +269,10 @@ Let's take advantage of the support for structured logging in the [tslog](https:
 1. Open the [button label="Router Source"](tab-3) tab
 2. Navigate to `app.ts`
 3. Find the line in the function `customRouter()`
-```ts
+```ts,nocopy
 logger.info(`routing request to ${host}`);
 ```
-4. Modify it to
+4. Modify it to read:
 ```ts
 logger.info(`routing request to ${host}`, {method: method});
 ```
@@ -353,6 +353,38 @@ Ok. We see `1.method`, but that's ugly. Let's fix it with OTTL!
 5. Press Run
 
 Much better. That last line removes the numeric prefix from any attributes and seems to work as expected.
+
+Let's put it into production, the same as before:
+1. Open the [button label="Collector Config"](tab-2) tab
+2. Replace your existing block under `collectors/daemon/config/processors`:
+```yaml,nocopy
+        transform/parse_json_body:
+            error_mode: ignore
+            ...
+```
+3. Replace with the OTTL we developed above:
+```yaml
+        transform/parse_json_body:
+            error_mode: ignore
+            log_statements:
+              - context: log
+                conditions:
+                  - body != nil and Substring(body, 0, 2) == "{\""
+                statements:
+                  - set(cache, ParseJSON(body))
+                  - flatten(cache, "")
+                  - merge_maps(attributes, cache, "upsert")
+
+                  - set(time, Time(attributes["_meta.date"], "%Y-%m-%dT%H:%M:%SZ"))
+                  - set(severity_text, attributes["_meta.logLevelName"])
+                  - set(severity_number, attributes["_meta.logLevelId"])
+                  - delete_matching_keys(attributes, "_meta\\..*")
+
+                  - set(body, attributes["0"])
+                  - delete_key(attributes, "0")
+
+                  - replace_all_patterns(attributes, "key", "\\d+\\.", "")
+```
 
 Now let's redeploy the OTel Operator with our updated config:
 
