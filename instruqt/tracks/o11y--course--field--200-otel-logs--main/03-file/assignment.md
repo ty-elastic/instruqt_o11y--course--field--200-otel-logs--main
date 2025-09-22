@@ -40,30 +40,33 @@ lab_config:
   custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["t3tg2slqodjt","fyb01yrpxc5q","amxs2wbeu14y","im6htfxz8yft"],"activeTabId":"t3tg2slqodjt","size":38}},{"leaf":{"tabs":["gquoynyprmua"],"activeTabId":"gquoynyprmua","size":60}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":32}}],"orientation":"Horizontal"}}'
 enhanced_loading: null
 ---
-As noted, there are many reasons why use of OTLP logging may be impractical. Chief among them is accommodating services which cannot be instrumented with OpenTelemetry (e.g., third-party services). These services simply write their logs to disk directly, or more commonly to stdout, which is then written to disk by the Kubernetes or Docker logging framework, for example.
+There are many reasons why use of OTLP-based logging may be impractical. Chief among them is accommodating services which cannot be instrumented with OpenTelemetry (e.g., third-party services). These services simply write their logs to disk directly, or more commonly to stdout, which is then written to disk by the Kubernetes or Docker logging provider, for example.
 
 To accommodate such services, we can use the [filelog receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/filelogreceiver) in the OTel Collector. In many regards, the `filelog` receiver is the OTel equivalent of Elastic's filebeat (often running as a module inside Elastic Agent).
 
 ![method-2](../assets/method2.mmd.png)
 
+Getting our bearings
+===
 In this example, we will be working with a service which outputs logs to stdout in a custom JSON format.
 
-Now let's see what our logs look like in Elasticsearch.
+Let's first examine the raw JSON logs as they are currently being received by Elasticsearch:
 1. Open the [button label="Elasticsearch"](tab-0) tab
-2. Click `Discover` in the left-hand navigation pane
-3. Execute the following query:
+2. Execute the following query:
 ```esql
 FROM logs-*
 | WHERE service.name == "router"
 ```
-4. Open the first log record by clicking on the double arrow icon under `Actions`
-5. Click on the `Log overview` tab
+3. Open the first log record by clicking on the double arrow icon under `Actions`
+4. Click on the `Log overview` tab
 
-Note that the body of the message is JSON-formatted.
+Note that the body of the message is not particularly useable:
+* it has a "burned-in" JSON format
+* it contains both the message ("0") and associated metadata ("_meta")
+* the log level as presented by Elasticsearch will always be `INFO` regardless of the actual log level
 
 # Checking the Source
-
-Now let's validate that these logs are being emitted to stdout, and written to disk:
+Now let's validate that these logs are indeed being emitted to stdout and written to disk:
 
 1. Open the [button label="Terminal"](tab-4) tab
 2. Execute the following to get a list of the active Kubernetes pods that comprise our trading system:
@@ -77,12 +80,10 @@ kubectl -n trading logs <router-...>
 ```
 (replace ... with the pod instance id)
 
-Note that logs are written to stdout.
-
-Now let's validate that Kubernetes is picking up stdout and written to disk:
+Note that the logs are being written to stdout and are being captured by the Kubernetes logging provider. Let's validate that Kubernetes is writing this log stream to disk:
 
 1. Open the [button label="Terminal"](tab-4) tab
-2. Let's peek on the logs being written to disk by Kubernetes
+2. Get all log files associated with pods
 ```bash,run
 cd /var/log/pods/
 ls
@@ -94,23 +95,26 @@ ls
 cd router
 ls
 ```
-4. Look at the logs:
+4. Look at the router container logs
 ```bash,run
 cat 0.log
 ```
 
-Making Sense of JSON Logs
-===
-Many custom applications log to a JSON format to provide some structure to the log line. To fully appreciate this benefit in a logging backend, however, you need to parse that JSON (embedded in the log line) and extract fields fo interest.
+Yup! Clearly these logs are being written to disk.
 
-While you could do this with Elasticsearch using Streams (as we will see in the future challenge), with OpenTelemetry, this can also be done in the Collector using [OTTL](https://opentelemetry.io/docs/collector/transforming-telemetry/).
+Parsing JSON logs
+===
+Many custom applications log to a JSON format to provide some structure to the log line. To fully appreciate this benefit in a logging backend, however, you need to parse that JSON (embedded in the log line) and extract fields of interest.
+
+While you could do this with Elasticsearch using Streams (as we will see in the future challenge), with OpenTelemetry, this can also be done at the edge in the Collector using [OTTL](https://opentelemetry.io/docs/collector/transforming-telemetry/).
 
 # OTTL Playground
+Crafting OTTL in a vacuum is tricky: the feedback loop of crafting OTTL, deploying it to the collector, validating it has the correct syntax, and validating it does what you expect can be long and painful.
 
-It is pretty tricky to craft OTTL in your Collector config, test, possibly fail, and fix. Fortunately, Elastic has made a great tool to let you interactively refine your OTTL before putting it in production.
+Fortunately, there is a better way! Elastic has made available the [OTTL Playground](https://ottl.run): a tool to interactively refine your OTTL before putting it in production.
 
 1. Open the [button label="OTTL Playground"](tab-1) tab
-2. Paste into the `OTLP Payload` pane an example of our JSON-ified `router` logs:
+2. Paste into the `OTLP Payload` pane an example from our JSON formatted `router` logs:
 ```json
 {
   "resourceLogs": [
@@ -138,29 +142,30 @@ It is pretty tricky to craft OTTL in your Collector config, test, possibly fail,
   ]
 }
 ```
-3. Pase into the `Configuration` pane the following starter configuration:
+3. Paste into the `Configuration` pane the following:
 ```yaml
-log_statements:
-  - context: log
-    conditions:
-      - body != nil and Substring(body, 0, 2) == "{\""
-    statements:
-      - set(cache, ParseJSON(body))
-      - flatten(cache, "")
-      - merge_maps(attributes, cache, "upsert")
+            log_statements:
+              - context: log
+                conditions:
+                  - body != nil and Substring(body, 0, 2) == "{\""
+                statements:
+                  - set(cache, ParseJSON(body))
+                  - flatten(cache, "")
+                  - merge_maps(attributes, cache, "upsert")
 ```
 
 Those initial set of log statements:
-1. checks if the message body is JSON formatted
-2. if so, parses the body as json, flattens the key names (to prevent nesting), and merges the results to `attributes`
+1. check if the message body is JSON formatted
+2. if so, parses the body as json, flattens the key names (to prevent nesting), and merges all extracted keys to `attributes`
 
-Click on the `Run >` button. In the `Result` pane, you can see the diff of what this OTTL would do, and it kind of matches what we expect.
+Click on the `Run >` button. In the `Result` pane, you can see the diff of what this OTTL would do, and it _kind of_ matches what we expect.
 
 It is far from ideal:
 * it does not conform to OTel semantic conventions (e.g., `_meta.logLevelName`, `_meta.date`)
-* the message body is now stored as an attribute with key `0`
+* the message body is stored as an attribute with key `0`
 
-Let's clean that up.
+Let's clean that up with OTTL!
+
 1. Paste the following into the `Configuration` pane:
 ```yaml
             log_statements:
@@ -182,25 +187,25 @@ Let's clean that up.
 ```
 2. Click on the `Run >` button
 
-Ah, that looks better. We:
-* converted the date from a string to an epoch timestamp and copied it into the proper field
-* copied the log level into the proper fields
-* deleted the remaining `_meta.*` fields
-* copied the body from `attributes.0` to the proper field
-* deleted the body from `attributes.0`
+Ah, that looks much better! Here, we are:
+* converting the date from a string to an epoch timestamp and copying it into the proper semantic convention (semcon) field
+* copy the log level into the proper semcon fields
+* deleting the remaining `_meta.*` fields
+* copying the body from `attributes.0` to the proper semcon field
+* deleting the now defunct `attributes.0`
 
-This looks great. Let's put it into production!
+This looks great. Let's put this configuration into production!
 
-# Modifying values.yaml
+# Putting It Into Production
 
-1. Open the [button label="collector Config"](tab-2) tab
+1. Open the [button label="Collector Config"](tab-2) tab
 2. Find the following lines under `collectors/daemon/config/processors`:
 ```yaml,nocopy
         transform/parse_json_body:
             error_mode: ignore
             # WORKSHOP CONTENT GOES HERE
 ```
-3. Replace it with the OTTL we developed above:
+3. Replace them with the OTTL we developed above:
 ```yaml
         transform/parse_json_body:
             error_mode: ignore
@@ -233,7 +238,7 @@ helm upgrade --install opentelemetry-kube-stack open-telemetry/opentelemetry-kub
   --version '0.9.1'
 ```
 
-Wait for a minute or so. We can check when the config has taken affect by looking for the daemonset collectors to restart.
+This will redeploy the OTelOperator, which in turn will restart the daemonset Collectors with their new config. We can check when the new configuration has taken affect by looking at the status of the daemonset Collectors.
 
 1. Open the [button label="Terminal"](tab-3) tab
 2. Execute the following:
@@ -241,7 +246,7 @@ Wait for a minute or so. We can check when the config has taken affect by lookin
 kubectl -n opentelemetry-operator-system get pods
 ```
 
-Once the daemonset collectors have restarted, let's check the logs coming into Elastic:
+When you see that the replacement daemonset Collectors have been up for at least 30 seconds, let's check the logs coming into Elastic:
 
 1. Open the [button label="Elasticsearch"](tab-0) tab
 2. Click `Discover` in the left-hand navigation pane
@@ -253,12 +258,16 @@ FROM logs-*
 4. Open the first log record by clicking on the double arrow icon under `Actions`
 5. Click on the `Log overview` tab
 
-Note the parsed JSON logs.
+Yes! Note that cleanly parsed JSON logs:
+* the message body is now just the message
+* the log level and timestamp are set correctly
 
-Let's do structured logging
+Handling Structured Logging
 ===
 
-1. Open the [button label="router Source"](tab-3) tab
+Let's take advantage of the support for structured logging in the [tslog](https://tslog.js.org/) package.
+
+1. Open the [button label="Router Source"](tab-3) tab
 2. Navigate to `app.ts`
 3. Find the line in the function `customRouter()`
 ```ts
@@ -269,14 +278,16 @@ logger.info(`routing request to ${host}`);
 logger.info(`routing request to ${host}`, {method: method});
 ```
 
-Now let's recompile and redeploy our `router` service.
+This will add the routing method selected to the log line in a structured manner.
+
+Now let's recompile and redeploy our `router` service:
 1. Open the [button label="Terminal"](tab-3) tab
 2. Execute the following:
 ```bash,run
 ./builddeploy.sh -s router
 ```
 
-Now let's see how that looks in Elasticsearch:
+Now let's see how this looks in Elasticsearch:
 1. Open the [button label="Elasticsearch"](tab-0) tab
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
@@ -287,10 +298,10 @@ FROM logs-*
 4. Open the first log record by clicking on the double arrow icon under `Actions`
 5. Click on the `Attributes` tab
 
-ugh, `1.method` is ugly. Let's fix it!
+Ok. We see `1.method`, but that's ugly. Let's fix it with OTTL!
 
 1. Open the [button label="OTTL Playground"](tab-1) tab
-2. Paste into the `OTLP Payload` pane an example of our JSON-ified `router` logs:
+2. Paste into the `OTLP Payload` pane an example from our JSON formatted `router` logs with the new `method` key:
 ```json
 {
   "resourceLogs": [
@@ -318,8 +329,8 @@ ugh, `1.method` is ugly. Let's fix it!
   ]
 }
 ```
-3. Press Run. Note the `1.method` attribute
-4. Paste into the `Configuration` pane the following starter configuration:
+3. Press Run. Note the `1.method` attribute as expected.
+4. Paste the following the `Configuration` pane:
 ```yaml
             log_statements:
               - context: log
@@ -342,10 +353,7 @@ ugh, `1.method` is ugly. Let's fix it!
 ```
 5. Press Run
 
-Much better.
-
-Note the addition of `replace_all_patterns(attributes, "key", "\\d+\\.", "")` which will remove the numerical prefix from attributes.
-
+Much better. That last line removes the numeric prefix from any attributes and seems to work as expected.
 
 Now let's redeploy the OTel Operator with our updated config:
 
@@ -358,7 +366,7 @@ helm upgrade --install opentelemetry-kube-stack open-telemetry/opentelemetry-kub
   --version '0.9.1'
 ```
 
-Wait for a minute or so. We can check when the config has taken affect by looking for the daemonset collectors to restart.
+This will redeploy the OTelOperator, which in turn will restart the daemonset Collectors with their new config. We can check when the new configuration has taken affect by looking at the status of the daemonset Collectors.
 
 1. Open the [button label="Terminal"](tab-3) tab
 2. Execute the following:
@@ -366,7 +374,8 @@ Wait for a minute or so. We can check when the config has taken affect by lookin
 kubectl -n opentelemetry-operator-system get pods
 ```
 
-Now let's see how that looks in Elasticsearch:
+When you see that the replacement daemonset Collectors have been up for at least 30 seconds, let's check the logs coming into Elastic:
+
 1. Open the [button label="Elasticsearch"](tab-0) tab
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
@@ -377,4 +386,7 @@ FROM logs-*
 4. Open the first log record by clicking on the double arrow icon under `Actions`
 5. Click on the `Log overview` tab
 
-Yeah! we've parsed our JSON logs!
+Nice and clean JSON logs in Elastic: perfect.
+
+Well almost. You'll note that we had to modify the configuration of the Collector in the daemonset; the same Collector which handles logs from all of our services. Imagine we have multiple services, each which outputs a unique JSON schema. In that case, we would have to introduce routing in our Collector pipelines in order to selectively apply the right OTTL for a given log source... What if there was a way that the services themselves could specify their configuration?
+ 

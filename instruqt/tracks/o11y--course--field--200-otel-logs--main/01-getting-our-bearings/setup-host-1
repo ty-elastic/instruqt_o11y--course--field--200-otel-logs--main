@@ -46,9 +46,9 @@ cd /workspace/workshop
 
 #retry_command_lin curl --silent --fail --output /dev/null --header "Authorization: Basic $ELASTICSEARCH_AUTH_BASE64" "$ELASTICSEARCH_URL/_cat/indices/logs-proxy.otel-default?allow_no_indices=false"
 
-curl -X POST "$ELASTICSEARCH_URL/logs-proxy.otel-default/_rollover" \
-    --header 'Content-Type: application/json' \
-    --header "Authorization: Basic $ELASTICSEARCH_AUTH_BASE64"
+# curl -X POST "$ELASTICSEARCH_URL/logs-proxy.otel-default/_rollover" \
+#     --header 'Content-Type: application/json' \
+#     --header "Authorization: Basic $ELASTICSEARCH_AUTH_BASE64"
 
 # echo "Wait for realtime"
 # retry_command_lin curl --silent --fail --output /dev/null http://kubernetes-vm:32003/status/realtime
