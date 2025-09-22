@@ -39,7 +39,6 @@ cd src/trader/_courses
 ./diff.sh
 cd ../../../instruqt
 
-
 for dir in ./tracks/*/; do
   echo $dir
   if [[ -d "$dir" ]]; then

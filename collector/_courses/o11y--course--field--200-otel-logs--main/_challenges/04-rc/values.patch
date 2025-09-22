@@ -1,5 +1,5 @@
 --- ../values.yaml	2025-09-21 19:51:29
-+++ o11y--course--field--200-otel-logs--main/_challenges/04-rc/values.yaml	2025-09-21 12:10:20
++++ o11y--course--field--200-otel-logs--main/_challenges/04-rc/values.yaml	2025-09-21 22:33:22
 @@ -171,16 +171,29 @@
          value: ""
        - name: ELASTIC_AGENT_OTEL
@@ -102,7 +102,7 @@
          # [Hostmetrics Receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/hostmetricsreceiver)
          hostmetrics:
            collection_interval: 10s
-@@ -432,11 +472,14 @@
+@@ -432,11 +472,13 @@
              - container.id
        # [Service Section](https://opentelemetry.io/docs/collector/configuration/#service)
        service:
@@ -113,24 +113,7 @@
 -              - filelog
 +              - receiver_creator/logs
              processors:
-+              - resource/logs_routing
 +              - transform/parse_json_body
                - batch
                - k8sattributes
                - resourcedetection/system
-@@ -445,7 +488,6 @@
-               - resourcedetection/aks
-               - resource/hostname
-               - resource/cloud
--              - resource/logs_routing
-             exporters:
-               - otlp/gateway
-           metrics/node/otel:
-@@ -478,7 +520,6 @@
-             processors:
-               - batch
-               - resource/hostname
--              - resource/logs_routing
-             exporters:
-               - otlp/gateway
-           traces/apm:

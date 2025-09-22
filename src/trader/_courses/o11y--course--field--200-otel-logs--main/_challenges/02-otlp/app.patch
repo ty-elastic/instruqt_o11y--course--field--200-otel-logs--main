@@ -1,16 +1,6 @@
 --- ../app.py	2025-09-21 20:24:48
-+++ o11y--course--field--200-otel-logs--main/_challenges/02-otlp/app.py	2025-09-20 07:13:45
-@@ -9,7 +9,8 @@
- import requests
- from werkzeug.middleware.proxy_fix import ProxyFix
- 
--from opentelemetry import trace, baggage, context
-+from opentelemetry import trace, baggage, context, metrics
-+from opentelemetry.processor.baggage import BaggageSpanProcessor, ALLOW_ALL_BAGGAGE_KEYS
- from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
- from opentelemetry.sdk.metrics.export import (
-     PeriodicExportingMetricReader,
-@@ -83,6 +84,8 @@
++++ o11y--course--field--200-otel-logs--main/_challenges/02-otlp/app.py	2025-09-21 22:31:31
+@@ -83,6 +83,8 @@
      set_attribute_and_baggage(f"{ATTRIBUTE_PREFIX}.customer_id", customer_id)
  
      subscription = params.get('subscription', None)
