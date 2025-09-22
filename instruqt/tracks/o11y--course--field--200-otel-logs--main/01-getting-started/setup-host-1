@@ -2,6 +2,7 @@ source /opt/workshops/elastic-retry.sh
 export $(curl http://kubernetes-vm:9000/env | xargs)
 
 export INSTRUQT_TRACK_SLUG=o11y--course--field--200-otel-logs--main
+export REPO=us-central1-docker.pkg.dev/elastic-sa/tbekiares
 
 /opt/workshops/clone-code.sh -r ty-elastic/instruqt_$INSTRUQT_TRACK_SLUG -d false
 
@@ -15,7 +16,7 @@ source /workspace/workshop/instruqt/scripts/elastic-streams.sh
 
 # ------------- OTTL
 
-docker run -d -p 9876:8080 ottl-playground:$INSTRUQT_TRACK_SLUG
+docker run -d -p 9876:8080 $REPO/ottl-playground:$INSTRUQT_TRACK_SLUG
 
 # ------------- DEPLOY
 
