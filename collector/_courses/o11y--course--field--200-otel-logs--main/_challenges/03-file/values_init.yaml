@@ -440,7 +440,6 @@ collectors:
             receivers:
               - filelog
             processors:
-              - resource/logs_routing
               - transform/parse_json_body
               - batch
               - k8sattributes
@@ -450,6 +449,7 @@ collectors:
               - resourcedetection/aks
               - resource/hostname
               - resource/cloud
+              - resource/logs_routing
             exporters:
               - otlp/gateway
           metrics/node/otel:
@@ -480,9 +480,9 @@ collectors:
             receivers:
               - otlp
             processors:
-              - resource/logs_routing
               - batch
               - resource/hostname
+              - resource/logs_routing
             exporters:
               - otlp/gateway
           traces/apm:

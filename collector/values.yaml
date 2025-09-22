@@ -437,7 +437,6 @@ collectors:
             receivers:
               - filelog
             processors:
-              - resource/logs_routing
               - batch
               - k8sattributes
               - resourcedetection/system
@@ -446,6 +445,7 @@ collectors:
               - resourcedetection/aks
               - resource/hostname
               - resource/cloud
+              - resource/logs_routing
             exporters:
               - otlp/gateway
           metrics/node/otel:
@@ -476,9 +476,9 @@ collectors:
             receivers:
               - otlp
             processors:
-              - resource/logs_routing
               - batch
               - resource/hostname
+              - resource/logs_routing
             exporters:
               - otlp/gateway
           traces/apm:

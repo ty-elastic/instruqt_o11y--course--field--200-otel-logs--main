@@ -5,7 +5,7 @@ type: challenge
 title: Wrapping Up
 notes:
 - type: text
-  contents: In this challenge, we summarize our work in this lab.
+  contents: In this challenge, we summarize our work in this lab
 tabs:
 - id: qvfwx1begtas
   title: Elasticsearch

@@ -1,9 +1,9 @@
---- ../values.yaml	2025-09-17 13:57:17
-+++ o11y--course--field--200-otel-logs--main/_challenges/03-ottl/values.yaml	2025-09-20 10:13:36
-@@ -190,6 +190,26 @@
-           tls:
-             insecure: true
-       processors:
+--- ../values.yaml	2025-09-21 19:51:29
++++ o11y--course--field--200-otel-logs--main/_challenges/03-file/values.yaml	2025-09-21 19:52:10
+@@ -195,6 +195,26 @@
+             - key: data_stream.dataset
+               from_attribute: service.name
+               action: upsert
 +        transform/parse_json_body:
 +            error_mode: ignore
 +            log_statements:
@@ -27,7 +27,7 @@
          # [Batch Processor](https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/batchprocessor)
          batch: {} # inherit any values from helm chart
          batch/metrics:
-@@ -432,6 +452,7 @@
+@@ -437,6 +457,7 @@
              receivers:
                - filelog
              processors:

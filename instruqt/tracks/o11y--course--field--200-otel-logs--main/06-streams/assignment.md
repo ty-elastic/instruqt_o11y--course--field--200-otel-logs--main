@@ -5,8 +5,8 @@ type: challenge
 title: Using Streams to Parse OTel logs
 notes:
 - type: text
-  contents: In this challenge, we will consider the challenges of working with limited
-    context while performing Root Cause Analysis of a reported issue
+  contents: In this challenge, we will look at how to parse OpenTelemetry logs using
+    Streams
 tabs:
 - id: v4zr50caye11
   title: Elasticsearch

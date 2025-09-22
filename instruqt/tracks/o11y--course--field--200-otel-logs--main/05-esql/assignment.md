@@ -5,8 +5,8 @@ type: challenge
 title: Using ES|QL to Parse OTel logs
 notes:
 - type: text
-  contents: In this challenge, we will consider the challenges of working with limited
-    context while performing Root Cause Analysis of a reported issue
+  contents: In this challenge, we will look at how to parse OpenTelemetry logs using
+    ES|QL
 tabs:
 - id: 3gpgxqod4yll
   title: Elasticsearch

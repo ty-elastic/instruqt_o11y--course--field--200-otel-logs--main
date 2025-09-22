@@ -5,8 +5,7 @@ type: challenge
 title: OpenTelemetry Logging on Kubernetes with Receiver Creator
 notes:
 - type: text
-  contents: In this challenge, we will consider the challenges of working with limited
-    context while performing Root Cause Analysis of a reported issue
+  contents: In this challenge, we will look at how the Receiver Creator works
 tabs:
 - id: vgilav3kazur
   title: Elasticsearch
@@ -32,11 +31,14 @@ tabs:
 difficulty: ""
 timelimit: 600
 lab_config:
-  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["vgilav3kazur","ubyi9wpnvjzg","6ebux7uxhpyo"],"activeTabId":"vgilav3kazur","size":38}},{"leaf":{"tabs":["5luf3xjq6izp"],"activeTabId":"5luf3xjq6izp","size":60}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":32}}],"orientation":"Horizontal"}}'
+  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["vgilav3kazur","ubyi9wpnvjzg","6ebux7uxhpyo"],"activeTabId":"vgilav3kazur","size":72}},{"leaf":{"tabs":["5luf3xjq6izp"],"activeTabId":"5luf3xjq6izp","size":25}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":31}}],"orientation":"Horizontal"}}'
 enhanced_loading: null
 ---
+Modifying the Collector config to parse specific logs feels awkward. Ideally, we would push bespoke parsing configurations to the deployment of the app or service itself. Realistically, it is the service which is in the best position to know the nuances of its custom logging pattern.
 
-Modifying the collector config to parse specific logs feels awkward. it might make sense if most of your custom logs follow a common format, but typcially the format is unique and bespoke to specific apps. If your apps are deployed on k8s, we can use the Receiver Creator to move the parsing config to the app yaml rather than values.yaml.
+Fortunately, on Kubernetes, just such an option exists: the [Receiver Creator](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/receiver/receivercreator/README.md) can be used to dynamically instantiate `file` receivers with a custom configuration driven by the deployment yaml of each service.
+
+it might make sense if most of your custom logs follow a common format, but typcially the format is unique and bespoke to specific apps. If your apps are deployed on k8s, we can use the Receiver Creator to move the parsing config to the app yaml rather than values.yaml.
 
 Let's have a look at our postgresql logs.
 
@@ -58,6 +60,8 @@ Let's parse these logs using the Receiver Creator.
 
 Let's have a look at the Receiver Creator config
 1. Open the [button label="Collector Config"](tab-1) tab
+
+
 
 Now we need to modify our `postgresql.yaml` to include our directives.
 
@@ -139,11 +143,17 @@ Now we need to modify our `postgresql.yaml` to include our directives.
 
 This blog applies a regex.
 
+
+
+> [!NOTE]
+> You note that Receiver Creator unfortunately uses a different language than OTTL. Notably, Receiver Creator does its transforms within the receiver itself, unlike OTTL which is instrumented using a Processor.
+
 Now apply it:
 1. Open the [button label="Terminal"](tab-3) tab
 2. Execute the following:
 ```bash,run
 ./deploy.sh -s postgresql
+./deploy.sh -s recorder-java
 ```
 
 Check Elasticsearch:

@@ -2,11 +2,10 @@
 slug: file
 id: co1ozkck8zux
 type: challenge
-title: OpenTelemetry Logging with filelog receiver
+title: OpenTelemetry Logging with the Filelog Receiver
 notes:
 - type: text
-  contents: In this challenge, we will consider the challenges of working with limited
-    context while performing Root Cause Analysis of a reported issue
+  contents: In this challenge, we will look at how the Filelog Receiver works
 tabs:
 - id: t3tg2slqodjt
   title: Elasticsearch
@@ -37,7 +36,7 @@ tabs:
 difficulty: ""
 timelimit: 600
 lab_config:
-  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["t3tg2slqodjt","fyb01yrpxc5q","amxs2wbeu14y","im6htfxz8yft"],"activeTabId":"t3tg2slqodjt","size":38}},{"leaf":{"tabs":["gquoynyprmua"],"activeTabId":"gquoynyprmua","size":60}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":32}}],"orientation":"Horizontal"}}'
+  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["t3tg2slqodjt","fyb01yrpxc5q","amxs2wbeu14y","im6htfxz8yft"],"activeTabId":"t3tg2slqodjt","size":72}},{"leaf":{"tabs":["gquoynyprmua"],"activeTabId":"gquoynyprmua","size":25}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":31}}],"orientation":"Horizontal"}}'
 enhanced_loading: null
 ---
 There are many reasons why use of OTLP-based logging may be impractical. Chief among them is accommodating services which cannot be instrumented with OpenTelemetry (e.g., third-party services). These services simply write their logs to disk directly, or more commonly to stdout, which is then written to disk by the Kubernetes or Docker logging provider, for example.
@@ -389,4 +388,3 @@ FROM logs-*
 Nice and clean JSON logs in Elastic: perfect.
 
 Well almost. You'll note that we had to modify the configuration of the Collector in the daemonset; the same Collector which handles logs from all of our services. Imagine we have multiple services, each which outputs a unique JSON schema. In that case, we would have to introduce routing in our Collector pipelines in order to selectively apply the right OTTL for a given log source... What if there was a way that the services themselves could specify their configuration?
- 

@@ -1,2 +1,2 @@
-diff -Naru ../values.yaml o11y--course--field--200-otel-logs--main/_challenges/03-ottl/values.yaml > o11y--course--field--200-otel-logs--main/_challenges/03-ottl/values.patch
+diff -Naru ../values.yaml o11y--course--field--200-otel-logs--main/_challenges/03-file/values.yaml > o11y--course--field--200-otel-logs--main/_challenges/03-file/values.patch
 diff -Naru ../values.yaml o11y--course--field--200-otel-logs--main/_challenges/04-rc/values.yaml > o11y--course--field--200-otel-logs--main/_challenges/04-rc/values.patch

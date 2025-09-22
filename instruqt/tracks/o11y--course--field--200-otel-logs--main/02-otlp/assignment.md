@@ -5,8 +5,8 @@ type: challenge
 title: OpenTelemetry Logging with OTLP
 notes:
 - type: text
-  contents: In this challenge, we will consider the challenges of working with limited
-    context while performing Root Cause Analysis of a reported issue
+  contents: In this challenge, we will look at how to do logging in OpenTelemetry
+    with OTLP
 tabs:
 - id: jeu1estyxf1z
   title: Elasticsearch
@@ -32,7 +32,7 @@ tabs:
 difficulty: ""
 timelimit: 600
 lab_config:
-  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["jeu1estyxf1z","kr5jkc770z5f","4qcxxz95lkpr"],"activeTabId":"jeu1estyxf1z","size":38}},{"leaf":{"tabs":["lyqrwsofywhh"],"activeTabId":"lyqrwsofywhh","size":60}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":32}}],"orientation":"Horizontal"}}'
+  custom_layout: '{"root":{"children":[{"branch":{"size":67,"children":[{"leaf":{"tabs":["jeu1estyxf1z","kr5jkc770z5f","4qcxxz95lkpr"],"activeTabId":"jeu1estyxf1z","size":72}},{"leaf":{"tabs":["lyqrwsofywhh"],"activeTabId":"lyqrwsofywhh","size":25}}]}},{"leaf":{"tabs":["assignment"],"activeTabId":"assignment","size":31}}],"orientation":"Horizontal"}}'
 enhanced_loading: null
 ---
 In this model, we will be sending logs directly from a service to an [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/) over the network using the [OTLP](https://opentelemetry.io/docs/specs/otel/protocol/) protocol. This is the default mechanism most OpenTelemetry SDKs use for exporting logs from a service.
