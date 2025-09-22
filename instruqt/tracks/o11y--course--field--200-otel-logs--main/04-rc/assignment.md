@@ -142,9 +142,6 @@ Now we need to modify our `postgresql.yaml` to include our parsing directives.
             field: attributes.severity_field
           - type: remove
             on_error: send_quiet
-            field: attributes.trace_version
-          - type: remove
-            on_error: send_quiet
             field: attributes.trace_id
           - type: remove
             on_error: send_quiet
@@ -178,6 +175,23 @@ We can check that by describing the pod.
 ```bash,run
 kubectl -n trading describe pod postgresql
 ```
+
+Note the `Annotations` as expected.
+
+And let's check that the daemonset Collector received the directive to create a new receiver for `postgresql`:
+1. Open the [button label="Terminal"](tab-3) tab
+2. Execute the following to get a list of the active Kubernetes pods that comprise our trading system:
+```bash,run
+kubectl -n opentelemetry-operator-system get pods
+```
+3. Find the active `opentelemetry-kube-stack-daemon-collector...` pod in the list
+4. Get stdout logs from the active `opentelemetry-kube-stack-daemon-collector` pod:
+```bash,nocopy
+kubectl -n opentelemetry-operator-system logs <opentelemetry-kube-stack-daemon-collector-...> | grep "starting receiver"
+```
+(replace ... with the pod instance id)
+
+And find the `starting receiver` message which shows `postgresql` starting up and being configured.
 
 Verifying our Changes
 ===

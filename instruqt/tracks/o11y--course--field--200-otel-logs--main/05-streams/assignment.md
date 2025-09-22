@@ -19,18 +19,21 @@ timelimit: 600
 enhanced_loading: null
 ---
 
-We can do even more with our logs if we parse them at ingest-time.
+An alternative to parsing logs at the edge is to use Elastic's Streams framework to parse the logs as they are ingested into Elastic. This has several distinct advantages to edge-based parsing:
+* failure store to handle logs which fail parsing rules
+* a nice UX to build regex and GROK expressions
+* AI Assistance to help build regex and GROK expressions
+* a library of additional parsing tools (like parsing User Agent or Client IP, for example)
 
-While you could use our OOTB integration to parse nginx logs, we've customized our nginx logs with a duration. Streams is really good at working with this.
+Parsing with Streams
+===
 
-# Parsing with Streams
-
-We will be working with Elastic [Streams](https://www.elastic.co/docs/solutions/observability/logs/streams/streams) which makes it easy to setup log parsing pipelines.
+Let's say we want to parse custom logs coming from our nginx reverse proxy. We've started with the defacto nginx log format, but added an additional field which makes it more challenging to use a simple OOTB integration.
 
 1. Select `logs-proxy.otel-default` from the list of data streams (if you start typing, Elasticsearch will help you find it)
 2. Select the `Processing` tab
 
-## Parsing the log message
+# Parsing the log message
 
 We can parse our nginx log messages at ingest-time using the Elastic [Grok](https://www.elastic.co/docs/reference/enrich-processor/grok-processor) processor.
 
@@ -47,7 +50,7 @@ We can parse our nginx log messages at ingest-time using the Elastic [Grok](http
 ```
 6. Wait until the sample `body.text` on the right shows highlighting, then click `Add processor`
 
-## Parsing the timestamp
+# Parsing the timestamp
 
 The nginx log line includes a timestamp; let's use that as our record timestamp.
 
@@ -57,9 +60,35 @@ The nginx log line includes a timestamp; let's use that as our record timestamp.
 4. Elastic should auto-recognize the format: `dd/MMM/yyyy:HH:mm:ss XX`
 5. Click `Add processor`
 
+Let's analyze our clients by `client.ip` to look for possibly geographic patterns.
+
+# Adding the GeoIP processor
+
+We can add the Elastic [GeoIP](https://www.elastic.co/docs/reference/enrich-processor/geoip-processor) processor to geo-locate our clients based on their client IP address.
+
+1. Select `logs-proxy.otel-default` from the list of Streams.
+2. Select the `Processing` tab
+3. Click `Add a processor`
+4. Select the `GeoIP` Processor
+5. Set the `Field` to
+  ```
+  client.ip
+  ```
+6. Open `Optional fields`
+7. Set `Target field` to
+  ```
+  client.geo
+  ```
+8. Set `Ignore missing` to true
+9. Click `Add processor`
+10. Click `Save changes` in the bottom-right
+
+![3_geo.png](../assets/3_geo.png)
+
 Now save the Processing by clicking `Save changes` in the bottom-right.
 
-# A faster way to query
+Example Queries
+===
 
 Now let's jump back to Discover by clicking `Discover` in the left-hand navigation pane.
 
@@ -68,4 +97,14 @@ Execute the following query:
 FROM logs-proxy.otel-default
 | WHERE http.response.status_code IS NOT NULL
 | KEEP @timestamp, client.ip, http.request.method, http.request.url.path, http.response.status_code, user_agent.original
+```
+
+By employing the GeoIP processor, we can do some really neat stuff around client location.
+
+Execute the following query:
+```esql
+FROM logs-proxy.otel-default
+| WHERE client.geo.country_iso_code IS NOT NULL AND http.response.status_code IS NOT NULL
+| STATS COUNT() BY http.response.status_code, client.geo.country_iso_code
+| SORT http.response.status_code DESC
 ```

@@ -19,7 +19,9 @@ timelimit: 600
 enhanced_loading: null
 ---
 
-In many cases, it might suffice to simply parse your logs on-demand rather than to do so at the edge. Elastic's ES|QL piped query language makes this really easy:
+In some cases, it might suffice to simply parse your logs on-demand rather than to do so at the edge. This is particularly beneficial to SREs who need to parse as part of a one-time Root Cause Analysis. 
+
+Elastic's ES|QL piped query language makes this really easy:
 
 1. Open the [button label="Elasticsearch"](tab-1) tab
 2. Execute the following query:
