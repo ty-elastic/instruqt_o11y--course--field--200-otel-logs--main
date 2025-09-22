@@ -99,6 +99,10 @@ FROM logs-proxy.otel-default
 | KEEP @timestamp, client.ip, http.request.method, http.request.url.path, http.response.status_code, user_agent.original
 ```
 
+> [!NOTE]
+> you may have to refresh the ES|QL query several times before results are present
+
+
 By employing the GeoIP processor, we can do some really neat stuff around client location.
 
 Execute the following query:

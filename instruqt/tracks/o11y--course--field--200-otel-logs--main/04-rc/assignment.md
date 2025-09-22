@@ -201,12 +201,17 @@ Let's check to see if our logs are being parsed as expected.
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-* WHERE service.name == "postgresql"
+FROM logs-* 
+| WHERE service.name == "postgresql"
+| WHERE trace.id IS NOT NULL
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
 5. Click on the `Log overview` tab
 
-Indeed, you'll note that the timestamp, log level, and `trace.id` are now being set as expected.
+> [!NOTE]
+> you may have to refresh the ES|QL query several times before results are present
+
+Indeed, you'll note that the timestamp, log level, and `trace.id` are now being set as expected and stripped from the message body.
 
 We can also check to see how our `postgresql` logs magically integrate into our distributed trace logs:
 1. Open the [button label="Elasticsearch"](tab-0) tab

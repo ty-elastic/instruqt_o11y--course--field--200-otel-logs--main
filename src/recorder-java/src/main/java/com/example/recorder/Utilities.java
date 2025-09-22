@@ -17,14 +17,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class Utilities {
-    private int lastGcTime = 0;
+    private int lastGcTime = -1;
 
     public int getGarbageCollectorDeltaTime (){
         int gcTime = 0;
         for (GarbageCollectorMXBean gcBean : ManagementFactory.getGarbageCollectorMXBeans()) {
             gcTime += gcBean.getCollectionTime();
         }
-        int gcDelta = gcTime - lastGcTime;
+        int gcDelta = 0;
+        if (lastGcTime != -1)
+            gcDelta = gcTime - lastGcTime;
         lastGcTime = gcTime;
         return gcDelta;
     }

@@ -42,7 +42,7 @@ function customRouter(req: any) {
     }
   }
 
-  logger.info(`routing request to ${host}`, {method: method});
+  logger.info(`routing request to ${host}`, {'com.example.method': method});
   return host;
 };
 

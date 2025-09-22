@@ -126,6 +126,7 @@ One major advantage of using OTLP for logging is the ability to very easily appe
 5. Click on the `POST /record` tab
 6. Scroll down to `Trace sample`
 7. Click on the `Logs` tab
+8. Click on the right scroll arrow next to `Trace sample` to find a sample with a complete set of logs (you should see logs from `trader`, `postgresql`, and `recorder-java`)
 
 These are all the logs associated with this particular trace sample.
 
@@ -166,6 +167,7 @@ Now let's see what our logs look like in Elasticsearch.
 ```esql
 FROM logs-*
 | WHERE service.name == "recorder-java" and message LIKE "*trade committed*"
+| WHERE attributes.com.example.gc_time IS NOT NULL
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
 5. Click on the `Attributes` tab
@@ -173,7 +175,7 @@ FROM logs-*
 Note the added attribute `attributes.com.example.gc_time`!
 
 > [!NOTE]
-> if `gc_time` is not yet present as an attribute, close the log line flyout, refresh the view in Discover, and try again.
+> if `gc_time` is not yet present as an attribute, refresh the view in Discover until there are valid results
 
 Now let's graph `gc_time` to answer our question.
 
@@ -205,7 +207,7 @@ Note that `attributes.com.example.customer_id` exists in this span too!
 
 1. Close the `Transaction details` flyout
 2. Click on the `Logs` tab under `Trace sample`
-3. Click on the log line that looks like `trade committed for <customer.id>`
+3. Click on the log line that looks like `trade committed for <customer.id>` from the `recorder-java` service
 
 Note that `attributes.com.example.customer_id` exists here too!
 
@@ -255,3 +257,6 @@ And now let's check our work in Elasticsearch:
 8. Click on the `Logs` tab
 9. Click on the `trade committed for <customer_id>` log line emitted by the `recorder-java` service
 10. Note the presence of the `subscription` attribute!
+
+> [!NOTE]
+> if `subscription` is not yet present as an attribute, click on the `Refresh` button at the top of the page, click on the `Overview` tab, then click again on the `Transactions` tab and follow from step 6 above.

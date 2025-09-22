@@ -252,11 +252,15 @@ When you see that the replacement daemonset Collectors have been up for at least
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-*
+FROM logs-* 
 | WHERE service.name == "router"
+| WHERE message LIKE "routing request*"
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
 5. Click on the `Log overview` tab
+
+> [!NOTE]
+> you may have to refresh the ES|QL query several times before results are present
 
 Yes! Note that cleanly parsed JSON logs:
 * the message body is now just the message
@@ -275,7 +279,7 @@ logger.info(`routing request to ${host}`);
 ```
 4. Modify it to read:
 ```ts
-logger.info(`routing request to ${host}`, {method: method});
+logger.info(`routing request to ${host}`, {'com.example.method': method});
 ```
 
 This will add the routing method selected to the log line in a structured manner.
@@ -292,13 +296,18 @@ Now let's see how this looks in Elasticsearch:
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-*
+FROM logs-* 
 | WHERE service.name == "router"
+| WHERE message LIKE "routing request*"
+| WHERE "attributes.1.com.example.method" IS NOT NULL
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
 5. Click on the `Attributes` tab
 
-Ok. We see `1.method`, but that's ugly. Let's fix it with OTTL!
+> [!NOTE]
+> you may have to refresh the ES|QL query several times before results are present
+
+Ok. We see `1.com.example.method`, but that's ugly. Let's fix it with OTTL!
 
 1. Open the [button label="OTTL Playground"](tab-1) tab
 2. Paste into the `OTLP Payload` pane an example from our JSON formatted `router` logs with the new `method` key:
@@ -319,7 +328,7 @@ Ok. We see `1.method`, but that's ugly. Let's fix it with OTTL!
               "traceId": "5b8efff798038103d269b633813fc60c",
               "spanId": "eee19b7ec3c1b174",
               "body": {
-                "stringValue": "{\"0\": \"routing request to http://recorder-java:9003\",  \"1.method\": \"random\",  \"_meta\": {    \"runtime\": \"Nodejs\",    \"runtimeVersion\": \"v20.19.5\",    \"hostname\": \"router-689cd9bd99-khtfx\",    \"name\": \"router\",    \"parentNames\": \"[undefined]\",    \"date\": \"2025-09-20T11:59:59.741Z\",    \"logLevelId\": 3,    \"logLevelName\": \"INFO\",    \"path\": {      \"fullFilePath\": \"/home/node/app/app.ts:35:10\",      \"fileName\": \"app.ts\",      \"fileNameWithLine\": \"app.ts:35\",      \"fileColumn\": \"10\",      \"fileLine\": \"35\",      \"filePath\": \"/app.ts\",      \"filePathWithLine\": \"/app.ts:35\",      \"method\": \"customRouter\"    }  }}"
+                "stringValue": "{\"0\": \"routing request to http://recorder-java:9003\",  \"1.com.example.method\": \"random\",  \"_meta\": {    \"runtime\": \"Nodejs\",    \"runtimeVersion\": \"v20.19.5\",    \"hostname\": \"router-689cd9bd99-khtfx\",    \"name\": \"router\",    \"parentNames\": \"[undefined]\",    \"date\": \"2025-09-20T11:59:59.741Z\",    \"logLevelId\": 3,    \"logLevelName\": \"INFO\",    \"path\": {      \"fullFilePath\": \"/home/node/app/app.ts:35:10\",      \"fileName\": \"app.ts\",      \"fileNameWithLine\": \"app.ts:35\",      \"fileColumn\": \"10\",      \"fileLine\": \"35\",      \"filePath\": \"/app.ts\",      \"filePathWithLine\": \"/app.ts:35\",      \"method\": \"customRouter\"    }  }}"
               }
             }
           ]
@@ -329,7 +338,7 @@ Ok. We see `1.method`, but that's ugly. Let's fix it with OTTL!
   ]
 }
 ```
-3. Press Run. Note the `1.method` attribute as expected.
+3. Press Run. Note the `1.com.example.method` attribute as expected.
 4. Paste the following the `Configuration` pane:
 ```yaml
             log_statements:
@@ -413,11 +422,16 @@ When you see that the replacement daemonset Collectors have been up for at least
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
 ```esql
-FROM logs-*
+FROM logs-* 
 | WHERE service.name == "router"
+| WHERE message LIKE "routing request*"
+| WHERE "attributes.com.example.method" IS NOT NULL
 ```
 4. Open the first log record by clicking on the double arrow icon under `Actions`
 5. Click on the `Log overview` tab
+
+> [!NOTE]
+> you may have to refresh the ES|QL query several times before results are present
 
 Nice and clean JSON logs in Elastic: perfect.
 
