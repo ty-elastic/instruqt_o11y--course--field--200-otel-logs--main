@@ -2,7 +2,7 @@
 
 # Logging with OpenTelemetry
 
-his is a hands-on, developer-centric workshop showcasing various methods for working with OpenTelemetry logs and Elastic. 
+This is a hands-on, developer-centric workshop showcasing various methods for working with OpenTelemetry logs and Elastic. 
 
 ## Background
 
@@ -22,14 +22,16 @@ In this lab, we will explore several state-of-the-art models for using OpenTelem
 
 Participants will walk away from the workshop with an introduction to:
 
+* Understanding the difference between OTLP and file-based logging with OTel
+* Understanding OTel Semantic Conventions and why they are needed for logging
 * Using OTTL and OTTL Playground to build log parsing transforms
-* Modifying the OpenTelemetry Collector Configuration to plumb OTTL
-* Using the OpenTelemetry Receiver Creator on k8s to dynamically insert log parsing statements
-* Parse JSON logs
-* Understand and use OpenTelemetry Baggage
-* Understand and use OpenTelemetry log/span correlation
-* Understand and use native logging frameworks with OTel to do structured logging
-* Employ SQL Commentor to attach trace.id to sql audit logs
+* Parsing JSON logs with OTTL
+* Modifying the OpenTelemetry Collector Configuration
+* Using the OpenTelemetry Receiver Creator on Kubernetes to dynamically inject log parsing
+* Understanding and using OpenTelemetry Baggage
+* Understanding and using OpenTelemetry log/span correlation
+* Understanding and using native logging frameworks with OTel to do structured logging
+* Using SQL Commenter to attach trace.id to SQL audit logs
 * Using ES|QL to search logs
 * Using ES|QL to parse logs at query-time
 * Using Streams to setup ingest-time log processing
