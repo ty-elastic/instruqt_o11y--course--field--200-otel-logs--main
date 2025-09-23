@@ -47,7 +47,7 @@ This workshop will leverage [ES|QL](https://www.elastic.co/docs/reference/query-
 
 ![1_discover.png](../assets/1_discover.png)
 
-Let's execute a test query to return and parse logs associated with our `proxy` service:
+Let's execute a test query to search and parse logs associated with our `proxy` service:
 
 ```esql
 FROM logs-proxy.otel-default

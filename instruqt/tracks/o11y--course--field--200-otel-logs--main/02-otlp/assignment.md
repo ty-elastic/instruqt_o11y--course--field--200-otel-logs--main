@@ -88,7 +88,7 @@ FROM logs-*
 3. Open the first log record by clicking on the double arrow icon under `Actions`
 4. Click on the `Attributes` tab
 
-You note that the `log.file.path` attribute is empty, in this case indicating this log line was delivered via OTLP without having been written to a log file.
+You note that the `log.file.path` attribute is empty, indicating this log line was delivered via OTLP without having been written to a log file.
 
 # Checking the Source
 
@@ -96,9 +96,9 @@ Let's have a look at the configuration of our `recorder-java` service.
 
 1. Open the [button label="recorder-java Source"](tab-1) tab
 2. Navigate to `src/main/resources/logback.xml`
-3. Note that no appenders are specified in the logback configuration (they are automatically injected by the OTel SDK on startup)
+3. Note that no appenders are specified in the Logback configuration (they are automatically injected by the OTel SDK on startup)
 
-Let's further validate that no logs are being written to stdout (which would be picked up and dumped to a log file by Kubernetes):
+Let's further validate that no logs are being written to stdout (which would be picked up and dumped to a log file by the Kubernetes logging provider):
 
 1. Open the [button label="Terminal"](tab-3) tab
 2. Execute the following to get a list of the active Kubernetes pods that comprise our trading system:
@@ -106,18 +106,17 @@ Let's further validate that no logs are being written to stdout (which would be 
 kubectl -n trading get pods
 ```
 3. Find the active `recorder-java-...` pod in the list
-4. Get stdout logs from the active `recorder-java` pod:
+4. Get stdout logs from the active `recorder-java` pod (replace `...` with the pod instance id):
 ```bash,nocopy
 kubectl -n trading logs <recorder-java-...>
 ```
-(replace ... with the pod instance id)
 
 Note that there are no logs being written to stdout from `recorder-java` because we have not configured any appenders in the logback configuration.
 
 This confirms that logs coming from the `recorder-java` application to our OTel Collector via OTLP, and not by way of a log file.
 
 > [!NOTE]
-> It is possible to leave a console appender in your logback configuration such that you can still view the logs locally (with `kubectl logs` or by tailing the log file itself). In this case, you would want to be sure you are explicitly excluding this log file from also being scrapped by your OTel Collector to avoid duplicative log input into Elasticsearch. We will show a straightforward way of doing this in a future challenge.
+> It is possible to leave a console appender in your Logback configuration such that you can still view the logs locally (with `kubectl logs` or by tailing the log file itself). In this case, you would want to be sure you are explicitly excluding this log file from also being scrapped by your OTel Collector to avoid duplicative log input into Elasticsearch. We will show a straightforward way of doing this in a future challenge.
 
 Correlation
 ===
@@ -136,10 +135,9 @@ These are all the logs associated with this particular trace sample.
 
 Attributes via Structured Logging
 ===
-
 Let's say that we think we might have a problem with the Garbage Collector in our Java Virtual Machine (JVM) running too often, possibly affecting database performance. As a developer, you might think to sample the amount of time spent in GC and then report that in a log file.
 
-Say we wanted to graph GC time by region to see if perhaps the issue is localized. To do that, we need GC time as a metric value. While we could just encode it into the log message as text and parse it out, that's unneccessary with modern structured logging APIs and OpenTelemetry.
+Say we wanted to graph GC time by region to see if perhaps the issue is localized. To do that, we need GC time as a metric value. While we could just encode it into the log message as text and parse it out, that's unnecessary with modern structured logging APIs and OpenTelemetry.
 
 OTLP logging allows us to easily add attributes to our log lines by using key/value mechanisms present in your existing logging API. In this case, we can use the `addKeyValue()` API exposed by our logging facade, slf4j.
 
@@ -158,6 +156,7 @@ log.atInfo().addKeyValue(Main.ATTRIBUTE_PREFIX + ".gc_time", utilities.getGarbag
 > It is generally considered best practice to prepend any custom attributes with a prefix scoped to your enterprise, like `com.example`
 
 Now let's recompile and redeploy our `recorder-java` service.
+
 1. Open the [button label="Terminal"](tab-3) tab
 2. Execute the following:
 ```bash,run
@@ -165,6 +164,7 @@ Now let's recompile and redeploy our `recorder-java` service.
 ```
 
 Now let's see what our logs look like in Elasticsearch.
+
 1. Open the [button label="Elasticsearch"](tab-0) tab
 2. Click `Discover` in the left-hand navigation pane
 3. Execute the following query:
@@ -242,6 +242,7 @@ Let's add an additional attribute in our trader service.
 ```
 
 Now let's recompile and redeploy our `trader` service.
+
 1. Open the [button label="Terminal"](tab-3) tab
 2. Execute the following:
 ```bash,run
