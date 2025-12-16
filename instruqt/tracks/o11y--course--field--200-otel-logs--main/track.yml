@@ -10,8 +10,8 @@ owner: elastic
 developers:
 - tyrone.bekiares@elastic.co
 show_timer: true
-idle_timeout: 900
-timelimit: 7200
+idle_timeout: 21600
+timelimit: 43200
 sandbox_preset: managed-vm-elastic-9-2-1
 lab_config:
   extend_ttl: 3600
@@ -24,5 +24,5 @@ lab_config:
     name: modern-dark
   override_challenge_layout: false
   hideStopButton: false
-checksum: "5754240647345436010"
+checksum: "17381527747105295909"
 enhanced_loading: false

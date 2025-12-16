@@ -1,5 +1,5 @@
---- ../app.py	2025-09-22 21:22:15
-+++ o11y--course--field--200-otel-logs--main/_challenges/02-otlp/app.py	2025-09-23 05:05:54
+--- ../app.py	2025-12-05 10:00:37
++++ o11y--course--field--200-otel-logs--main/_challenges/02-otlp/app.py	2025-12-05 10:00:37
 @@ -88,6 +88,8 @@
      set_attribute_and_baggage(f"{ATTRIBUTE_PREFIX}.customer_id", customer_id)
  

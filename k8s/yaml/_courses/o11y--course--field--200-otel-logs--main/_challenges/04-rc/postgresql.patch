@@ -1,5 +1,5 @@
---- ../postgresql.yaml	2025-09-21 12:52:34
-+++ o11y--course--field--200-otel-logs--main/_challenges/04-rc/postgresql.yaml	2025-09-21 12:47:48
+--- ../postgresql.yaml	2025-12-05 10:00:37
++++ o11y--course--field--200-otel-logs--main/_challenges/04-rc/postgresql.yaml	2025-12-05 10:00:37
 @@ -22,7 +22,76 @@
          dbName: trades
        annotations:

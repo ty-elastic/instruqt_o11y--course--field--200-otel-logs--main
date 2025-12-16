@@ -1,5 +1,5 @@
---- ../values.yaml	2025-09-21 19:51:29
-+++ o11y--course--field--200-otel-logs--main/_challenges/04-rc/values.yaml	2025-09-22 18:16:18
+--- ../values.yaml	2025-12-08 09:40:43
++++ o11y--course--field--200-otel-logs--main/_challenges/04-rc/values.yaml	2025-12-08 09:40:57
 @@ -171,16 +171,29 @@
          value: ""
        - name: ELASTIC_AGENT_OTEL

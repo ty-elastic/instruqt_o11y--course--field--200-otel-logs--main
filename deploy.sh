@@ -36,7 +36,7 @@ if [ "$otel" = "true" ]; then
     helm upgrade --install opentelemetry-kube-stack open-telemetry/opentelemetry-kube-stack \
     --namespace opentelemetry-operator-system \
     --values 'values.yaml' \
-    --version '0.9.1'
+    --version '0.10.5'
     cd ..
 
     sleep 30

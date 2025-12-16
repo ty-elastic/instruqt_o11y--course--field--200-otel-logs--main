@@ -1,5 +1,5 @@
---- ../app.ts	2025-09-21 07:06:45
-+++ o11y--course--field--200-otel-logs--main/_challenges/03-file/app.ts	2025-09-22 10:35:44
+--- ../app.ts	2025-12-05 10:00:37
++++ o11y--course--field--200-otel-logs--main/_challenges/03-file/app.ts	2025-12-05 10:00:37
 @@ -42,7 +42,7 @@
      }
    }

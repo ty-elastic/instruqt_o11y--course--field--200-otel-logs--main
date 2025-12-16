@@ -1,5 +1,5 @@
---- ../src/main/java/com/example/recorder/TradeRecorder.java	2025-09-19 20:08:32
-+++ o11y--course--field--200-otel-logs--main/_challenges/02-otlp/TradeRecorder.java	2025-09-20 07:14:52
+--- ../src/main/java/com/example/recorder/TradeRecorder.java	2025-12-05 10:00:37
++++ o11y--course--field--200-otel-logs--main/_challenges/02-otlp/TradeRecorder.java	2025-12-05 10:00:37
 @@ -35,7 +35,7 @@
  
          Trade savedTrade = tradeRepo.save(trade);

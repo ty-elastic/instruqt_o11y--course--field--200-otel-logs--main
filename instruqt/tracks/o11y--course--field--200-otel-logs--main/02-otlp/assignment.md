@@ -77,19 +77,6 @@ Most of the languages supported by OpenTelemetry are automatically instrumented 
 
 In this example, we are leveraging the [OpenTelemetry Operator for Kubernetes](https://opentelemetry.io/docs/platforms/kubernetes/operator/) to automatically inject the OTel SDK into our services, including the `recorder-java` service. Our `recorder-java` service is using Logback as a logging framework with a [slf4j](https://www.slf4j.org/) facade.
 
-Let's first validate we have logs coming in from our `recorder-java` service:
-
-1. Open the [button label="Elasticsearch"](tab-0) tab
-2. Execute the following query:
-```esql
-FROM logs-*
-| WHERE service.name == "recorder-java"
-```
-3. Open the first log record by clicking on the double arrow icon under `Actions`
-4. Click on the `Attributes` tab
-
-You note that the `log.file.path` attribute is empty, indicating this log line was delivered via OTLP without having been written to a log file.
-
 # Checking the Source
 
 Let's have a look at the configuration of our `recorder-java` service.
@@ -97,23 +84,6 @@ Let's have a look at the configuration of our `recorder-java` service.
 1. Open the [button label="recorder-java Source"](tab-1) tab
 2. Navigate to `src/main/resources/logback.xml`
 3. Note that no appenders are specified in the Logback configuration (they are automatically injected by the OTel SDK on startup)
-
-Let's further validate that no logs are being written to stdout (which would be picked up and dumped to a log file by the Kubernetes logging provider):
-
-1. Open the [button label="Terminal"](tab-3) tab
-2. Execute the following to get a list of the active Kubernetes pods that comprise our trading system:
-```bash,run
-kubectl -n trading get pods
-```
-3. Find the active `recorder-java-...` pod in the list
-4. Get stdout logs from the active `recorder-java` pod (replace `...` with the pod instance id):
-```bash,nocopy
-kubectl -n trading logs <recorder-java-...>
-```
-
-Note that there are no logs being written to stdout from `recorder-java` because we have not configured any appenders in the logback configuration.
-
-This confirms that logs coming from the `recorder-java` application to our OTel Collector via OTLP, and not by way of a log file.
 
 > [!NOTE]
 > It is possible to leave a console appender in your Logback configuration such that you can still view the logs locally (with `kubectl logs` or by tailing the log file itself). In this case, you would want to be sure you are explicitly excluding this log file from also being scrapped by your OTel Collector to avoid duplicative log input into Elasticsearch. We will show a straightforward way of doing this in a future challenge.
@@ -187,7 +157,7 @@ Execute the following query:
 ```esql
 FROM logs-*
 | WHERE service.name == "recorder-java"
-| STATS count = MAX(attributes.com.example.gc_time)  BY attributes.com.example.region, BUCKET(@timestamp, 1 minute)
+| STATS count = MAX(attributes.com.example.gc_time) BY attributes.com.example.region, BUCKET(@timestamp, 1 minute)
 ```
 
 Indeed, it looks like only the `recorder-java` service deployed to the `NA` region is exhibiting this problem.
@@ -224,58 +194,3 @@ Let's look at the code which initially stuck `customer_id` into OTel baggage:
 1. Open the [button label="Trader Source"](tab-2) tab
 2. Navigate to `app.py`
 3. Look for calls to `set_attribute_and_baggage()` inside the `decode_common_args()` function
-
-Here, we are pushing attributes into OTel Baggage. OTel is propagating that baggage with every call to a distributed surface. The baggage follows the context of a given span through all dependent services. Within a given service, we can leverage BaggageProcessor extensions to automatically apply metadata in baggage as attributes to the active span (including logs).
-
-![baggage](../assets/otel-baggage.png)
-
-Let's add an additional attribute in our trader service.
-
-1. Find the following line in the `decode_common_args()` function:
-```python,nocopy
-    subscription = params.get('subscription', None)
-```
-2. Add the following to push `subscription` into baggage:
-```python
-    if subscription is not None:
-        set_attribute_and_baggage(f"{ATTRIBUTE_PREFIX}.subscription", subscription)
-```
-
-Now let's recompile and redeploy our `trader` service.
-
-1. Open the [button label="Terminal"](tab-3) tab
-2. Execute the following:
-```bash,run
-./builddeploy.sh -s trader
-```
-
-And now let's check our work in Elasticsearch:
-
-1. Open the [button label="Elasticsearch"](tab-0) tab
-2. Click `Discover` in the left-hand navigation pane
-3. Execute the following query:
-```esql
-FROM logs-*
-| WHERE service.name == "recorder-java" and message LIKE "*trade committed*"
-| WHERE attributes.com.example.subscription IS NOT NULL
-```
-4. Open the first log record by clicking on the double arrow icon under `Actions`
-5. Click on the `Attributes` tab
-
-Note the added attribute `attributes.com.example.subscription` in the `recorder-java` logs, automatically passed along via OTel Baggage from where they inserted by `trader`.
-
-> [!NOTE]
-> if `attributes.com.example.subscription` is not yet present as an attribute, refresh the view in Discover until there are valid results
-
-Note that Baggage is also automatically applied to every child span:
-
-1. Open the [button label="Elasticsearch"](tab-0) tab
-1. Click `Applications` > `Service Inventory` in the left-hand navigation pane
-2. Click on the `Service Map` tab
-3. Click on the `trader` service
-4. Click on `Service Details`
-5. Click on the `Transactions` tab
-6. Scroll down and click on the `POST /trade/request` transaction under `Transactions`
-7. Scroll down to the waterfall graph under `Trace sample`
-8. Click on the `INSERT trades.trades` database span recorded by the `recorder-java` service
-9. Note the presence of the `subscription` attribute!

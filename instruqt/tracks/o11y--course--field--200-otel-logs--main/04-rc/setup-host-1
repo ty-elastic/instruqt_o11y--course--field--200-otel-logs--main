@@ -7,4 +7,4 @@ cp -f collector/_courses/o11y--course--field--200-otel-logs--main/_challenges/04
 helm upgrade --install opentelemetry-kube-stack open-telemetry/opentelemetry-kube-stack \
     --namespace opentelemetry-operator-system \
     --values 'collector/values.yaml' \
-    --version '0.9.1'
+    --version '0.10.5'
