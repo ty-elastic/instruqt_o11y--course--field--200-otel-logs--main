@@ -157,6 +157,7 @@ Execute the following query:
 ```esql
 FROM logs-*
 | WHERE service.name == "recorder-java"
+| WHERE attributes.com.example.gc_time IS NOT NULL
 | STATS count = MAX(attributes.com.example.gc_time) BY attributes.com.example.region, BUCKET(@timestamp, 1 minute)
 ```
 

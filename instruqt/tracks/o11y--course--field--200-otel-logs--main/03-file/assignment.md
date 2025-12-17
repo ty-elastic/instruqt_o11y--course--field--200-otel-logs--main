@@ -177,7 +177,7 @@ Let's clean that up with OTTL!
 
                   - set(time, Time(attributes["_meta.date"], "%Y-%m-%dT%H:%M:%SZ"))
                   - set(severity_text, attributes["_meta.logLevelName"])
-                  - set(severity_number, attributes["_meta.logLevelId"])
+                  - set(severity_number, Int(attributes["_meta.logLevelId"]))
                   - delete_matching_keys(attributes, "_meta\\..*")
 
                   - set(body, attributes["0"])
@@ -200,9 +200,9 @@ This looks great. Let's put this configuration into production!
 2. Open the file `values.yaml`
 3. Find the following block under `collectors/daemon/config/processors`:
 ```yaml,nocopy
+        # REPLACE THIS BLOCK WITH WORKSHOP CONTENT
         transform/parse_json_body:
             error_mode: ignore
-            # WORKSHOP CONTENT GOES HERE
 ```
 4. Replace it with the OTTL we developed above:
 ```yaml
@@ -219,7 +219,7 @@ This looks great. Let's put this configuration into production!
 
                   - set(time, Time(attributes["_meta.date"], "%Y-%m-%dT%H:%M:%SZ"))
                   - set(severity_text, attributes["_meta.logLevelName"])
-                  - set(severity_number, attributes["_meta.logLevelId"])
+                  - set(severity_number, Int(attributes["_meta.logLevelId"]))
                   - delete_matching_keys(attributes, "_meta\\..*")
 
                   - set(body, attributes["0"])
@@ -231,6 +231,7 @@ Now let's redeploy the OTel Operator with our updated config:
 1. Open the [button label="Terminal"](tab-3) tab
 2. Execute the following:
 ```bash,run
+cd /workspace/workshop
 helm upgrade --install opentelemetry-kube-stack open-telemetry/opentelemetry-kube-stack --force \
   --namespace opentelemetry-operator-system \
   --values 'collector/values.yaml' \

@@ -195,9 +195,11 @@ collectors:
             - key: data_stream.dataset
               from_attribute: service.name
               action: upsert
+
+        # REPLACE THIS BLOCK WITH WORKSHOP CONTENT
         transform/parse_json_body:
             error_mode: ignore
-            # WORKSHOP CONTENT GOES HERE
+            
         # [Batch Processor](https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/batchprocessor)
         batch: {} # inherit any values from helm chart
         batch/metrics:
