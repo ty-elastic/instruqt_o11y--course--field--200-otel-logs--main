@@ -195,3 +195,58 @@ Let's look at the code which initially stuck `customer_id` into OTel baggage:
 1. Open the [button label="Trader Source"](tab-2) tab
 2. Navigate to `app.py`
 3. Look for calls to `set_attribute_and_baggage()` inside the `decode_common_args()` function
+
+Here, we are pushing attributes into OTel Baggage. OTel is propagating that baggage with every call to a distributed surface. The baggage follows the context of a given span through all dependent services. Within a given service, we can leverage BaggageProcessor extensions to automatically apply metadata in baggage as attributes to the active span (including logs).
+
+![baggage](../assets/otel-baggage.png)
+
+Let's add an additional attribute in our trader service.
+
+1. Find the following line in the `decode_common_args()` function:
+```python,nocopy
+    subscription = params.get('subscription', None)
+```
+2. Add the following to push `subscription` into baggage:
+```python
+    if subscription is not None:
+        set_attribute_and_baggage(f"{ATTRIBUTE_PREFIX}.subscription", subscription)
+```
+
+Now let's recompile and redeploy our `trader` service.
+
+1. Open the [button label="Terminal"](tab-3) tab
+2. Execute the following:
+```bash,run
+./builddeploy.sh -s trader
+```
+
+And now let's check our work in Elasticsearch:
+
+1. Open the [button label="Elasticsearch"](tab-0) tab
+2. Click `Discover` in the left-hand navigation pane
+3. Execute the following query:
+```esql
+FROM logs-*
+| WHERE service.name == "recorder-java" and message LIKE "*trade committed*"
+| WHERE attributes.com.example.subscription IS NOT NULL
+```
+4. Open the first log record by clicking on the double arrow icon under `Actions`
+5. Click on the `Attributes` tab
+
+Note the added attribute `attributes.com.example.subscription` in the `recorder-java` logs, automatically passed along via OTel Baggage from where they inserted by `trader`.
+
+> [!NOTE]
+> if `attributes.com.example.subscription` is not yet present as an attribute, refresh the view in Discover until there are valid results
+
+Note that Baggage is also automatically applied to every child span:
+
+1. Open the [button label="Elasticsearch"](tab-0) tab
+1. Click `Applications` > `Service Inventory` in the left-hand navigation pane
+2. Click on the `Service Map` tab
+3. Click on the `trader` service
+4. Click on `Service Details`
+5. Click on the `Transactions` tab
+6. Scroll down and click on the `POST /trade/request` transaction under `Transactions`
+7. Scroll down to the waterfall graph under `Trace sample`
+8. Click on the `INSERT trades.trades` database span recorded by the `recorder-java` service
+9. Note the presence of the `subscription` attribute!
