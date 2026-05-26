@@ -1,25 +1,6 @@
 --- ../app.py	2026-05-26 17:30:24
-+++ o11y--course--field--200-otel-logs--main/_challenges/02-otlp/app.py	2025-12-05 10:00:37
-@@ -19,7 +19,8 @@
- )
- 
- from opentelemetry import _logs as logs
--from opentelemetry.processor.baggage import BaggageSpanProcessor, BaggageLogProcessor, ALLOW_ALL_BAGGAGE_KEYS
-+from opentelemetry.processor.logrecord.baggage import BaggageLogRecordProcessor
-+from opentelemetry.processor.baggage import BaggageSpanProcessor, ALLOW_ALL_BAGGAGE_KEYS
- 
- ATTRIBUTE_PREFIX = "com.example"
- 
-@@ -42,7 +43,7 @@
- 
-     if 'OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED' in os.environ:
-         print("enable otel logging")
--        logs.get_logger_provider().add_log_record_processor(BaggageLogProcessor(ALLOW_ALL_BAGGAGE_KEYS))     
-+        logs.get_logger_provider().add_log_record_processor(BaggageLogRecordProcessor(ALLOW_ALL_BAGGAGE_KEYS))        
-         root_logger = logging.getLogger()
-         for handler in root_logger.handlers:
-             if isinstance(handler, logging.StreamHandler):
-@@ -87,6 +88,8 @@
++++ o11y--course--field--200-otel-logs--main/_challenges/02-otlp/app.py	2026-05-26 18:10:08
+@@ -87,6 +87,8 @@
      set_attribute_and_baggage(f"{ATTRIBUTE_PREFIX}.customer_id", customer_id)
  
      subscription = params.get('subscription', None)
