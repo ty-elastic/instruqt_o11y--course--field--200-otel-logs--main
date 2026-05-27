@@ -164,7 +164,7 @@ Now apply the modified `postgres.yaml` Kubernetes deployment yaml:
 2. Execute the following:
 ```bash,run
 ./deploy.sh -s postgresql
-./deploy.sh -s recorder-java
+./deploy.sh -s recorder-java -l true
 ```
 
 This will redeploy `postgresql` with the modified deployment yaml.

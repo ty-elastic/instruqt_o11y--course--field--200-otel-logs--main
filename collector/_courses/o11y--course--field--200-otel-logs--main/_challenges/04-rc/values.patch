@@ -1,4 +1,4 @@
---- ../values.yaml	2026-05-27 10:53:14
+--- ../values.yaml	2026-05-27 11:14:29
 +++ o11y--course--field--200-otel-logs--main/_challenges/04-rc/values.yaml	2026-05-27 10:56:22
 @@ -175,10 +175,18 @@
      env:
