@@ -1,7 +1,7 @@
---- ../values.yaml	2026-05-26 18:08:23
-+++ o11y--course--field--200-otel-logs--main/_challenges/04-rc/values.yaml	2026-05-26 18:08:53
-@@ -171,16 +171,29 @@
-         value: ""
+--- ../values.yaml	2026-05-27 10:53:14
++++ o11y--course--field--200-otel-logs--main/_challenges/04-rc/values.yaml	2026-05-27 10:56:22
+@@ -175,10 +175,18 @@
+     env:
        - name: ELASTIC_AGENT_OTEL
          value: '"true"'
 +    volumeMounts:
@@ -18,21 +18,10 @@
 -        storeCheckpoints: true # Store checkpoints for log collection, allowing for resumption from the last processed log.
 +        enabled: false # Enable/disable the collection of node's logs.
 +        storeCheckpoints: false # Store checkpoints for log collection, allowing for resumption from the last processed log.
-     hostNetwork: true # Use the host's network namespace. This allows the daemon to access the network interfaces of the host directly.
-     securityContext: # Run the daemon as the root user and group for proper metrics collection.
-       runAsUser: 0
-       runAsGroup: 0
-     scrape_configs_file: "" # [Prometheus metrics](https://github.com/open-telemetry/opentelemetry-helm-charts/tree/main/charts/opentelemetry-kube-stack#scrape_configs_file-details)
-     config:
-+      extensions:
-+        k8s_observer:
-+          observe_nodes: true
-+          observe_services: true
-+          observe_ingresses: true
-       exporters:
-         # [Debug exporter](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/debugexporter/README.md)
-         debug:
-@@ -190,6 +203,26 @@
+       kubernetesEvents:
+         enabled: false
+       clusterMetrics:
+@@ -198,6 +206,26 @@
            tls:
              insecure: true
        processors:
@@ -59,7 +48,7 @@
          resource/logs_routing:
            attributes:
              - key: data_stream.dataset
-@@ -310,21 +343,28 @@
+@@ -326,21 +354,28 @@
                endpoint: 0.0.0.0:4317
              http:
                endpoint: 0.0.0.0:4318
@@ -101,13 +90,24 @@
 +        #       type: container
          # [Hostmetrics Receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/hostmetricsreceiver)
          hostmetrics:
-           collection_interval: 10s
-@@ -432,11 +472,13 @@
+           collection_interval: 60s
+@@ -448,9 +483,13 @@
              - container.id
+       extensions:
+         cgroupruntime: {}
++        k8s_observer:
++          observe_nodes: true
++          observe_services: true
++          observe_ingresses: true
        # [Service Section](https://opentelemetry.io/docs/collector/configuration/#service)
        service:
-+        extensions: [k8s_observer]
+-        extensions: [cgroupruntime]
++        extensions: [cgroupruntime, k8s_observer]
          pipelines:
+           # Disable default non used kube-stack Helm Chart pipelines
+           logs: null
+@@ -458,8 +497,9 @@
+           traces: null
            logs/node:
              receivers:
 -              - filelog
