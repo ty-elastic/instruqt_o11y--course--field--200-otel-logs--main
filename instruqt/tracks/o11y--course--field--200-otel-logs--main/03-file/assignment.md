@@ -235,7 +235,7 @@ cd /workspace/workshop
 helm upgrade --install opentelemetry-kube-stack open-telemetry/opentelemetry-kube-stack --force \
   --namespace opentelemetry-operator-system \
   --values 'collector/values.yaml' \
-  --version '0.10.5'
+  --version '0.12.4'
 ```
 
 This will redeploy the OTelOperator, which in turn will restart the daemonset Collectors with their new config. We can check when the new configuration has taken affect by looking at the status of the daemonset Collectors.
