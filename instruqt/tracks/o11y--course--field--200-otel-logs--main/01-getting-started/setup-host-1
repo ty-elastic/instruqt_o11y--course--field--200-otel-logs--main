@@ -21,7 +21,7 @@ docker run -d -p 9876:8080 $REPO/ottl-playground:$INSTRUQT_TRACK_SLUG
 # ------------- DEPLOY
 
 cd /workspace/workshop
-./deploy.sh -o true -c $INSTRUQT_TRACK_SLUG -v $INSTRUQT_TRACK_SLUG
+env -u BASH_ENV bash ./deploy.sh -o true -c $INSTRUQT_TRACK_SLUG -v $INSTRUQT_TRACK_SLUG
 
 # ------------- WAIT
 
